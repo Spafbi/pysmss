@@ -1,7 +1,7 @@
 # Simplified Miscreated Server Setup - Python Edition
 This is a complete rewrite of the legacy *Simplified Miscreated Server Setup* script. It was written in just a few hours and is somewhat sloppy...but it works.
 
-The script doesn't yet auto-update, nor does it currently prompt for server values. Rather, all desired configurable values may be populated in a [smss.json](smss.example.log) configuration file. If values aren't specified, defaults will be used.
+The script doesn't yet auto-update, nor does it currently prompt for server values. Rather, all desired configurable values may be populated in a [smss.json](smss.example.json) configuration file. If values aren't specified, defaults will be used.
 
 ## Running the script
 At a minumum, download and place both [smss.cmd](smss.cmd) and [smss-core.py](smss-core.py) in an empty directory. Execute the [smss.cmd](smss.cmd) script to setup and start the server. While the server will start with a default configuration, it is suggested you create an [smss.json](smss.example.json) file with at least the `server_name` configured.
@@ -58,6 +58,12 @@ At a minumum, download and place both [smss.cmd](smss.cmd) and [smss-core.py](sm
 | time_offset | -1 | wm_timeOffset |
 
 Note: the `enable_upnp` setting currently has no effect. Server ports must be manually forwarded through your firewall. The first four ports should be forwarded as UDP, the fifth port (RCON) as TCP. If you use the default base port of `64090`, the UDP ports to be forwarded are `64090`-`64093`, and the TCP port is `64094`.
+
+### Special files
+The following files may be placed in the script directory to invoke special script behavior, just create an empty file with the desired name to trigger the action:
+* `debug` or `debug.txt` - Enable verbose logging. Logging is also written to `smss.log`.
+* `skip` or `skip.txt` - Skips validating the Miscreated server files - don't do this until *after* the script has been run at least once resulting in the server launching as expected.
+* `stop` or `stop.txt` - If this file exists the Miscreated server will not restart upon termination.
 
 ## Despawn prevention
 ### Global despawn prevention
