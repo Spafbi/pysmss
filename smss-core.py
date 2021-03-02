@@ -23,6 +23,8 @@ class SmssConfig:
     def __init__(self, **kwargs):
         logging.debug("Initializing MiscreatedRCON object")
 
+        self.as_corpseCountMax = kwargs.get('ai_corpses_max', 20)
+        self.as_corpseRemovalTime = kwargs.get('ai_corpses_removal', 300)
         self.asm_disable = kwargs.get('disable_ai', False)
         self.asm_hordeCooldown = kwargs.get('horde_cooldown', 900)
         self.asm_maxMultiplier = kwargs.get('asm_maxMultiplier', 1)
@@ -35,6 +37,7 @@ class SmssConfig:
         self.g_gameRules_Camera = kwargs.get('camera', 0)
         self.g_gameRules_bases = kwargs.get('base_rules', 1)
         self.g_idleKickTime = kwargs.get('idle_kick_seconds', 300)
+        self.g_maxHealthMultiplier = kwargs.get('player_health_multiplier', 1)
         self.g_pingLimitGraceTimer = kwargs.get('ping_limit_grace_timer', 60)
         self.g_pingLimitTimer = kwargs.get('ping_limit_timer', 60)
         self.g_pinglimit = kwargs.get('ping_limit', 0)
@@ -46,6 +49,7 @@ class SmssConfig:
         self.g_playerTemperatureSpeed = kwargs.get('temperature_speed', 1.0)
         self.g_playerWaterDecay = kwargs.get('thirst_rate', 0.4861)
         self.g_playerWaterDecaySprinting = kwargs.get('thirst_rate_while_running', 0.607638)
+        self.g_playerWeightLimit = kwargs.get('player_weight_limit', 40)
         self.g_respawnAtBaseTime = kwargs.get('respawn_at_base_timeout', 30)
         self.grant_guides = kwargs.get('grant_guides', False)
         self.http_password = kwargs.get('rcon_password', 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0")))
@@ -83,7 +87,6 @@ class SmssConfig:
         self.wm_timeOffset = kwargs.get('time_offset', -1)
         self.wm_timeScale = self.get_timeScale()
         self.wm_timeScaleNight = self.get_timeScaleNight()
-
 
         self.script_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -533,6 +536,8 @@ def main():
     while run_server:
         smss = SmssConfig(**json_config)
 
+        update_cfg(smss.miscreated_server_config, 'as_corpseCountMax', smss.as_corpseCountMax)
+        update_cfg(smss.miscreated_server_config, 'as_corpseRemovalTime', smss.as_corpseRemovalTime)
         update_cfg(smss.miscreated_server_config, 'asm_disable', int(smss.asm_disable))
         update_cfg(smss.miscreated_server_config, 'asm_hordeCooldown', smss.asm_hordeCooldown)
         update_cfg(smss.miscreated_server_config, 'asm_maxMultiplier', smss.asm_maxMultiplier)
@@ -541,6 +546,7 @@ def main():
         update_cfg(smss.miscreated_server_config, 'g_gameRules_Camera', smss.g_gameRules_Camera)
         update_cfg(smss.miscreated_server_config, 'g_gameRules_bases', smss.g_gameRules_bases)
         update_cfg(smss.miscreated_server_config, 'g_idleKickTime', smss.g_idleKickTime)
+        update_cfg(smss.miscreated_server_config, 'g_maxHealthMultiplier', smss.g_maxHealthMultiplier)
         update_cfg(smss.miscreated_server_config, 'g_pingLimitGraceTimer', smss.g_pingLimitGraceTimer)
         update_cfg(smss.miscreated_server_config, 'g_pingLimitTimer', smss.g_pingLimitTimer)
         update_cfg(smss.miscreated_server_config, 'g_pinglimit', smss.g_pinglimit)
@@ -552,6 +558,7 @@ def main():
         update_cfg(smss.miscreated_server_config, 'g_playerTemperatureSpeed', smss.g_playerTemperatureSpeed)
         update_cfg(smss.miscreated_server_config, 'g_playerWaterDecay', smss.g_playerWaterDecay)
         update_cfg(smss.miscreated_server_config, 'g_playerWaterDecaySprinting', smss.g_playerWaterDecaySprinting)
+        update_cfg(smss.miscreated_server_config, 'g_playerWeightLimit', smss.g_playerWeightLimit)
         update_cfg(smss.miscreated_server_config, 'g_respawnAtBaseTime', smss.g_respawnAtBaseTime)
         update_cfg(smss.miscreated_server_config, 'http_password', smss.http_password)
         update_cfg(smss.miscreated_server_config, 'ism_maxCount', smss.ism_maxCount)

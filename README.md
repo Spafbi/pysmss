@@ -11,6 +11,8 @@ If a variable has a `hosting.cfg` equivalent, you can find a description for mos
 
 | variable | default (if not defined) | `hosting.cfg` equivalent |
 | -------- | ------------------------ | ------------------------ |
+| ai_corpses_max | `20` | as_corpseCountMax |
+| ai_corpses_removal | `300` | as_corpseRemovalTime |
 | asm_maxMultiplier | `1` | asm_maxMultiplier |
 | asm_percent | `60` | asm_percent |
 | base_rules | `1` | g_gameRules_bases |
@@ -46,6 +48,8 @@ If a variable has a `hosting.cfg` equivalent, you can find a description for mos
 | ping_limit | `0` | asm_hordeCoolg_pinglimitdown |
 | ping_limit_grace_timer | `60` | g_pingLimitGraceTimer |
 | ping_limit_timer | `60` | g_pingLimitTimer |
+| player_health_multiplier | `1` | g_maxHealthMultiplier |
+| player_weight_limit | `40` | g_playerWeightLimit |
 | port | `64090` | N/A |
 | rcon_password | `(randomized)` | http_password |
 | reset_base_despawn_clan_ids | `(empty list)` | N/A |
