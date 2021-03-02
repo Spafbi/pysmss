@@ -26,12 +26,6 @@ class SmssConfig:
         self.asm_hordeCooldown = kwargs.get('horde_cooldown', 900)
         self.asm_maxMultiplier = kwargs.get('asm_maxMultiplier', 1)
         self.asm_percent = kwargs.get('asm_percent', 60)
-        self.reset_base_despawn_clan_ids = kwargs.get('reset_base_despawn_clan_ids', list())
-        self.reset_base_despawn_ids = kwargs.get('reset_base_despawn_ids', list())
-        self.reset_tent_despawn_clan_ids = kwargs.get('reset_tent_despawn_clan_ids', list())
-        self.reset_tent_despawn_ids = kwargs.get('reset_tent_despawn_ids', list())
-        self.reset_vehicle_despawn_clan_ids = kwargs.get('reset_vehicle_despawn_clan_ids', list())
-        self.reset_vehicle_despawn_ids = kwargs.get('reset_vehicle_despawn_ids', list())
         self.bind_ip = kwargs.get('bind_ip', '0.0.0.0')
         self.enable_rcon = kwargs.get('enable_rcon', True)
         self.enable_upnp = kwargs.get('enable_upnp', False)
@@ -52,6 +46,15 @@ class SmssConfig:
         self.mod_ids = kwargs.get('mod_ids', False)
         self.pcs_maxCorpseTime = kwargs.get('max_corpse_time', 1200)
         self.port = kwargs.get('port', 64090)
+        self.reset_base_despawn_clan_ids = kwargs.get('reset_base_despawn_clan_ids', list())
+        self.reset_base_despawn_ids = kwargs.get('reset_base_despawn_ids', list())
+        self.reset_bases = kwargs.get('reset_bases', False)
+        self.reset_tent_despawn_clan_ids = kwargs.get('reset_tent_despawn_clan_ids', list())
+        self.reset_tent_despawn_ids = kwargs.get('reset_tent_despawn_ids', list())
+        self.reset_tents = kwargs.get('reset_tents', False)
+        self.reset_vehicle_despawn_clan_ids = kwargs.get('reset_vehicle_despawn_clan_ids', list())
+        self.reset_vehicle_despawn_ids = kwargs.get('reset_vehicle_despawn_ids', list())
+        self.reset_vehicles = kwargs.get('reset_vehicles', False)
         self.server_id = kwargs.get('server_id', False)
         self.sv_motd = kwargs.get('motd_a', False)
         self.sv_msg_conn = kwargs.get('connection_messages', False)
@@ -63,11 +66,11 @@ class SmssConfig:
         self.theros_admin_mod_admin_ids = kwargs.get('theros_admin_mod_admins', False)
         self.time_day_minutes = kwargs.get('time_day_minutes', 180)
         self.time_night_minutes = kwargs.get('time_night_minutes', 60)
-        self.wm_timeScale = self.get_timeScale()
-        self.wm_timeScaleNight = self.get_timeScaleNight()
         self.wm_forceTime = kwargs.get('force_time', -1)
         self.wm_pattern = kwargs.get('force_pattern', -1)
         self.wm_timeOffset = kwargs.get('time_offset', -1)
+        self.wm_timeScale = self.get_timeScale()
+        self.wm_timeScaleNight = self.get_timeScaleNight()
 
         self.script_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -233,11 +236,6 @@ def grant_guides(smss):
     if not smss.grant_guides:
         return
 
-    if not os.path.exists(smss.miscreated_server_db):
-        logging.debug('Database not yet created')
-        logging.debug('Guides cannot be granted until the database hase been created by the server')
-        return
-
     logging.debug('Granting guides to all players')
 
     query = """
@@ -343,6 +341,15 @@ def object_timer_reset_for_clans(smss):
             smss.reset_vehicle_despawn_ids.append(steam_id[0])
 
 def object_timer_reset(smss):
+    if smss.reset_bases:
+        sql = "UPDATE Structures SET AbandonTimer=2419200 WHERE ClassName='PlotSign';"
+        get_result_set(smss.miscreated_server_db, sql)
+    if smss.reset_tents:
+        sql = "UPDATE Structures SET AbandonTimer=2419200 WHERE ClassName like '%tent%';"
+        get_result_set(smss.miscreated_server_db, sql)
+    if smss.reset_vehicles:
+        sql = "UPDATE Vehicles SET AbandonTimer=2419200;"
+        get_result_set(smss.miscreated_server_db, sql)
     if not len(smss.reset_vehicle_despawn_ids) and not len(smss.reset_tent_despawn_ids):
         return
     bases = get_result_set(smss.miscreated_server_db, get_bases_sql())
@@ -542,10 +549,11 @@ def main():
         remove_mods(smss)
         get_steam(smss)
         validate_miscreated_server(smss)
-        grant_guides(smss)
-        object_timer_reset_for_clans(smss)
-        object_timer_reset(smss)
-        base_timer_reset(smss)
+        if os.path.exists(smss.miscreated_server_db):
+            grant_guides(smss)
+            object_timer_reset_for_clans(smss)
+            object_timer_reset(smss)
+            base_timer_reset(smss)
         launch_miscreated_server(smss)
 
         run_server = not stop_server(smss)
