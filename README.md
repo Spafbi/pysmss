@@ -26,6 +26,8 @@ At a minumum, download and place both [smss.cmd](smss.cmd) and [smss-core.py](sm
 | grant_guides | false | N/A |
 | horde_cooldown | 900 | asm_hordeCooldown |
 | idle_kick_seconds | 300 | g_idleKickTime |
+| loot_concurrent_item_spawned | 750 (5000 max) | ism_maxCount |
+| loot_spawner_percent | 20 (90 max) | ism_percent |
 | infinite_stamina | 0 | g_playerInfiniteStamina |
 | map | islands | N/A |
 | max_corpse_time | 1200 | pcs_maxCorpseTime |
