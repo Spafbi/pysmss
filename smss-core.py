@@ -546,7 +546,7 @@ def main():
         object_timer_reset_for_clans(smss)
         object_timer_reset(smss)
         base_timer_reset(smss)
-        #launch_miscreated_server(smss)
+        launch_miscreated_server(smss)
 
         run_server = not stop_server(smss)
 
