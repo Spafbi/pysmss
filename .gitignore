@@ -1,0 +1,15 @@
+*.json
+*.log
+Pipfile*
+!smss.example.json
+MiscreatedServer
+SteamCMD
+debug
+debug.txt
+python
+skip
+skip.txt
+smss-configurator*
+stop
+stop.txt
+temp
