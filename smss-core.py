@@ -476,6 +476,13 @@ def main():
                         help="""Force configuration prompts - this should be used if you wish to change previously selected options""")
 
     script_path = os.path.dirname(sys.argv[0])
+    script_path = os.path.abspath(script_path)
+
+    if script_path.find(' ') >= 0:
+        print('This script cannot be run in paths having spaces. Current path:')
+        print('   {}'.format(script_path) + "\n")
+        return
+
     debug_file = str(Path('{}/debug'.format(script_path)))
     debug_txt_file = str(Path('{}/debug.txt'.format(script_path)))
     verbose = False
