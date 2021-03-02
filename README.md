@@ -66,8 +66,8 @@ If a variable has a `hosting.cfg` equivalent, you can find a description for mos
 | theros_admin_mod_admin_ids | `false` | N/A |
 | thirst_rate | `0.4861` | g_playerWaterDecay |
 | thirst_rate_while_running | `0.607638` | g_playerWaterDecaySprinting |
-| time_day_minutes | `180` | wm_timeScale |
-| time_night_minutes | `60` | wm_timeScaleNight |
+| time_day_minutes | `390` | wm_timeScale |
+| time_night_minutes | `82.5` | wm_timeScaleNight |
 | time_offset | `-1` | wm_timeOffset |
 
 Note: the `enable_upnp` setting currently has no effect. Server ports must be manually forwarded through your firewall. The first four ports should be forwarded as UDP, the fifth port (RCON) as TCP. If you use the default base port of `64090`, the UDP ports to be forwarded are `64090`-`64093`, and the TCP port is `64094`.
