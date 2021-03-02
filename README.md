@@ -3,6 +3,9 @@ This is a complete rewrite of the legacy *Simplified Miscreated Server Setup* sc
 
 The script doesn't yet auto-update, nor does it currently prompt for server values. Rather, all configurable values may be populated in a [smss.json](smss.example.log) configuration file. If values aren't specified, defaults will be used.
 
+## Running the script
+Download and place both [smss.cmd](smss.cmd) and [smss-core.py](smss-core.py) in an empty directory. Execute the [smss.cmd](smss.cmd) script to setup and start the server.
+
 ## Configurable JSON values
 
 | variable | default (if not defined) | `hosting.cfg` equivalent |
