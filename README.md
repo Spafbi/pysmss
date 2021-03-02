@@ -7,6 +7,7 @@ The script doesn't yet auto-update, nor does it currently prompt for server valu
 At a minumum, download and place both [smss.cmd](smss.cmd) and [smss-core.py](smss-core.py) in an empty directory. Execute the [smss.cmd](smss.cmd) script to setup and start the server. While the server will start with a default configuration, it is suggested you create an [smss.json](smss.example.json) file with at least the `server_name` configured.
 
 ### Configurable JSON values
+If a variable has a `hosting.cfg` equivalent, you can find a description for most of the variables here: [https://servers.miscreatedgame.com/help](https://servers.miscreatedgame.com/help)
 
 | variable | default (if not defined) | `hosting.cfg` equivalent |
 | -------- | ------------------------ | ------------------------ |
@@ -18,19 +19,24 @@ At a minumum, download and place both [smss.cmd](smss.cmd) and [smss-core.py](sm
 | connection_messages | false | sv_msg_conn |
 | crafting_multiplier | 1 | g_craftingSpeedMultiplier |
 | death_messages | false | sv_msg_death |
+| disable_ai | false | asm_disable |
 | enable_rcon | true | N/A |
 | enable_upnp | false | N/A |
 | enable_whitelist | false | N/A |
 | force_pattern | -1 | wm_pattern |
 | force_time | -1 | wm_forceTime |
 | grant_guides | false | N/A |
+| health_regen_rate | 0.111 | g_playerHealthRegen |
 | horde_cooldown | 900 | asm_hordeCooldown |
+| hunger_rate | 0.2777 | g_playerFoodDecay |
+| hunger_rate_while_running | 0.34722 | g_playerFoodDecaySprinting |
 | idle_kick_seconds | 300 | g_idleKickTime |
+| infinite_stamina | 0 | g_playerInfiniteStamina |
 | loot_concurrent_item_spawned | 750 (5000 max) | ism_maxCount |
 | loot_spawner_percent | 20 (90 max) | ism_percent |
-| infinite_stamina | 0 | g_playerInfiniteStamina |
 | map | islands | N/A |
 | max_corpse_time | 1200 | pcs_maxCorpseTime |
+| max_player_corpses | 20 | pcs_maxCorpses |
 | max_players | 36 | N/A |
 | max_uptime | 12 | max_uptime |
 | mod_ids | (empty list) | steam_ugc |
@@ -51,10 +57,15 @@ At a minumum, download and place both [smss.cmd](smss.cmd) and [smss-core.py](sm
 | reset_vehicle_despawn_clan_ids | `(empty list)` | N/A |
 | reset_vehicle_despawn_ids | `(empty list)` | N/A |
 | reset_vehicles | false | N/A |
+| respawn_at_base_timeout | 30 | g_respawnAtBaseTime |
 | server_id | 100 or first value in db | N/A |
 | server_name | Miscreated Self-hosted Server#(random#) | sv_servername |
+| temperature_speed | 1.0 | g_playerTemperatureSpeed |
+| tempertature_environment_speed | 0.0005 | g_playerTemperatureEnvRate |
 | theros_admin_mod | false | N/A |
 | theros_admin_mod_admin_ids | false | N/A |
+| thirst_rate | 0.4861 | g_playerWaterDecay |
+| thirst_rate_while_running | 0.607638 | g_playerWaterDecaySprinting |
 | time_day_minutes | 180 | wm_timeScale |
 | time_night_minutes | 60 | wm_timeScaleNight |
 | time_offset | -1 | wm_timeOffset |
