@@ -45,7 +45,7 @@ If a variable has a `hosting.cfg` equivalent, you can find a description for mos
 | motd_a | `false` | sv_motd |
 | motd_b | `false` | sv_url |
 | no_bans | `false` | sv_noBannedAccounts |
-| ping_limit | `0` | asm_hordeCoolg_pinglimitdown |
+| ping_limit | `0` | g_pinglimit |
 | ping_limit_grace_timer | `60` | g_pingLimitGraceTimer |
 | ping_limit_timer | `60` | g_pingLimitTimer |
 | player_health_multiplier | `1` | g_maxHealthMultiplier |
