@@ -295,6 +295,13 @@ def base_timer_reset(smss):
 
 def launch_miscreated_server(smss):
     logging.debug('method: launch_miscreated_server')
+
+    semaphore_file = Path(str(smss.miscreated_server_path) + '/smss.managed')
+
+    f = open(semaphore_file, "w")
+    f.write("This server is managed by Spafbi's Simplified Miscreated Server Setup script.")
+    f.close()
+
     server_options = list()
 
     if smss.bind_ip:
