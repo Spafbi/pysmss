@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup 
+from colorama import init
 from datetime import date, datetime
 from pathlib import Path
 from pprint import pprint, pformat
@@ -18,6 +19,7 @@ import sys
 import zipfile
 
 sys.path.insert(0, '')
+init()
 
 class SmssConfig:
     """

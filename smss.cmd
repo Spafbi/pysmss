@@ -15,13 +15,16 @@ set SMSSTEMP=%BASEPATH%\temp
 goto :pythonCheck
 
 :pythonCheck
-if exist "%PYTHONBIN%" goto :pipCheck
+if exist "%PYTHONBIN%" goto :importSite
 echo Downloading and installing embedded Python...
 if not exist "%SMSSTEMP%" (
   md "%SMSSTEMP%"
 )
 curl -L %PYTHONURL% -o "%SMSSTEMP%/python.zip"
 powershell Expand-Archive -LiteralPath '%SMSSTEMP%/python.zip' -DestinationPath '%PYTHONDIR%'
+goto :importSite
+
+:importSite
 setlocal
 >%PYTHONDIR%\python39._pth (
     for %%I in (
@@ -41,7 +44,7 @@ curl -L %PIPURL% -o "%SMSSTEMP%/get-pip.py"
 goto :moduleCheck
 
 :moduleCheck
-for %%x in (bs4 requests) do (
+for %%x in (bs4 colorama requests) do (
   if not exist %PYTHONDIR%\Lib\site-packages\%%x\__init__.py (
     echo Installing pip module %%x
     "%PYTHONBIN%" -m pip install -U %%x --no-warn-script-location
