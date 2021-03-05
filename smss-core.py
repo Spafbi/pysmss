@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup 
+from datetime import date, datetime
 from pathlib import Path
 from pprint import pprint, pformat
 from random import randint
@@ -9,11 +11,13 @@ import json
 import logging
 import math
 import os
+import requests 
 import shutil
 import sqlite3
 import sys
 import zipfile
 
+sys.path.insert(0, '')
 
 class SmssConfig:
     """
@@ -87,6 +91,7 @@ class SmssConfig:
         self.wm_timeOffset = kwargs.get('time_offset', -1)
         self.wm_timeScale = float(self.get_timeScale())
         self.wm_timeScaleNight = float(self.get_timeScaleNight())
+        self.steam_ugc = self.condense_mods()
 
         self.script_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -111,6 +116,19 @@ class SmssConfig:
         self.miscreated_server_path.mkdir(parents=True, exist_ok=True)
         self.steamcmd_path.mkdir(parents=True, exist_ok=True)
         self.temp_path.mkdir(parents=True, exist_ok=True)
+
+    def condense_mods(self):
+        if self.theros_admin_mod and not isinstance(self.mod_ids, list):
+            self.mod_ids = list()
+        self.mod_ids.append(2011185435)
+
+        unique_mods = list()
+        for mod_id in self.mod_ids:
+            if mod_id not in unique_mods:
+                unique_mods.append(mod_id)
+        if unique_mods:
+            return ','.join(str(m) for m in unique_mods)
+        return ''
 
     def get_server_id_from_db(self):
         if not os.path.exists(self.miscreated_server_db):
@@ -204,27 +222,44 @@ def get_result_set(db, sql):
 
     return result_set
 
+def get_mod_name(mod_id):
+    url="https://steamcommunity.com/sharedfiles/filedetails/?id={}".format(mod_id)
+    try:
+        reqs = requests.get(url)
+        soup = BeautifulSoup(reqs.text, 'html.parser')
+        title = soup.find('title').get_text()
+    except Exception as e:
+        return mod_id
+    if title.find("Steam Workshop::") >= 0:
+        title = title.replace("Steam Workshop::",mod_id + ": ")
+    else:
+        title = mod_id
+    return title
+
+def get_mod_titles(smss):
+    if not len(smss.steam_ugc):
+        return "<none>"
+
+    mod_ids=smss.steam_ugc.split(',')
+    first = True
+    mod_list = ''
+    for mod in mod_ids:
+        this_line = ''
+        if not first:
+            this_line = '\n               '
+        mod_list = mod_list + this_line + get_mod_name(mod)
+        first=False
+    return mod_list
+
 def configure_admin_mod(smss):
     if not smss.theros_admin_mod or not smss.theros_admin_mod_admin_ids:
         return
     
-    if not isinstance(smss.mod_ids, list):
-        smss.mod_ids = list() 
-
-    smss.mod_ids.append(2011185435)
-
     ServerOwner=','.join(str(t) for t in smss.theros_admin_mod_admin_ids)
     ServerOwner='"{}"'.format(ServerOwner)
     
     update_cfg(smss.miscreated_server_admin_config, 'ServerOwner', ServerOwner)
 
-def condense_mods(smss):
-    unique_mods = list()
-    for mod_id in smss.mod_ids:
-        if mod_id not in unique_mods:
-            unique_mods.append(mod_id)
-    return ','.join(str(m) for m in unique_mods)
-    
 def get_steam(smss):
     logging.debug('method: get_steam')
     if os.path.exists(smss.steamcmd):
@@ -323,6 +358,8 @@ def launch_miscreated_server(smss):
 
     server_cmd = '"{}"'.format(smss.miscreated_server_cmd) + ' ' + server_options
 #║╔╗╚╝─═╟╢
+    cvars=get_cvars(smss)
+    timestamp = str(date.today()) + ', ' + str(datetime.now().strftime("%I:%M %p"))
     print("""
 ══════════════════════════════════════════════════════════════════════════════
                               hosting.cfg cvars
@@ -332,11 +369,12 @@ def launch_miscreated_server(smss):
 ══════════════════════════════════════════════════════════════════════════════
   [1m[36mServer Name: [1m[33m{sv_servername}[0m
           [1m[36mMap: [1m[33m{map}[0m
+         [1m[36mMods: [1m[33m{mods}[0m
     [1m[36mGame Port: [1m[33m{port}[0m
     [1m[36mRCON Port: [1m[33m{rcon}[0m
 ══════════════════════════════════════════════════════════════════════════════
 
-Launching Miscreated server process...
+Launching Miscreated server process ({timestamp})...
 ╔════════════════════════════════════════════════════════════════════════════╗
 ║                                                                            ║
 ║                          [1m[31mDO NOT CLOSE THIS WINDOW[0m                          ║
@@ -347,13 +385,19 @@ Launching Miscreated server process...
 ║  the server will not automatically restart.                                ║
 ║                                                                            |
 ╚════════════════════════════════════════════════════════════════════════════╝
-""".format(cvars=get_cvars(smss),
+""".format(cvars=cvars,
+           date=date.today(),
            map=smss.miscreated_map,
+           mods=get_mod_titles(smss),
            port=smss.port,
            rcon=smss.port+4,
-           sv_servername=smss.sv_servername))
+           sv_servername=smss.sv_servername,
+           timestamp=timestamp))
     logging.debug(server_cmd)
+    logging.debug('Server started: ' + timestamp)
     asyncio.run(run(server_cmd))
+    timestamp = str(date.today()) + ', ' + str(datetime.now().strftime("%I:%M %p"))
+    logging.debug('Server closed: ' + timestamp)
 
 def object_timer_reset_for_clans(smss):
     override_ids_sql = """SELECT (AccountID + 76561197960265728) AS SteamID
@@ -479,7 +523,6 @@ def get_cvars(smss):
         'server': {
             'http_password': '*'*len(smss.http_password),
             'max_uptime': smss.max_uptime,
-            'steam_ugc': condense_mods(smss),
             'sv_msg_conn': smss.sv_msg_conn,
             'sv_msg_death': smss.sv_msg_death,
             'sv_noBannedAccounts': smss.sv_noBannedAccounts,
@@ -493,6 +536,8 @@ def get_cvars(smss):
             'wm_timeScaleNight': smss.wm_timeScaleNight
         }
     }
+    if len(smss.steam_ugc):
+        hosting_cfg_cvars['server']['steam_ugc'] = smss.steam_ugc
     if smss.sv_motd:
         hosting_cfg_cvars['server']['sv_motd'] = smss.sv_motd
     if smss.sv_url:
@@ -663,8 +708,8 @@ def main():
 
         configure_admin_mod(smss)
     
-        if smss.mod_ids:
-            update_cfg(smss.miscreated_server_config, 'steam_ugc', condense_mods(smss))
+        if len(smss.steam_ugc):
+            update_cfg(smss.miscreated_server_config, 'steam_ugc', smss.steam_ugc)
         if smss.sv_motd:
             update_cfg(smss.miscreated_server_config, 'sv_motd', smss.sv_motd)
         if smss.sv_url:
