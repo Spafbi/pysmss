@@ -1,5 +1,5 @@
 from pathlib import Path
-from pprint import pprint
+from pprint import pprint, pformat
 from random import randint
 from urllib import request
 import asyncio
@@ -23,45 +23,45 @@ class SmssConfig:
     def __init__(self, **kwargs):
         logging.debug("Initializing MiscreatedRCON object")
 
-        self.as_corpseCountMax = kwargs.get('ai_corpses_max', 20)
-        self.as_corpseRemovalTime = kwargs.get('ai_corpses_removal', 300)
-        self.asm_disable = kwargs.get('disable_ai', False)
-        self.asm_hordeCooldown = kwargs.get('horde_cooldown', 900)
-        self.asm_maxMultiplier = kwargs.get('asm_maxMultiplier', 1)
-        self.asm_percent = kwargs.get('asm_percent', 60)
+        self.as_corpseCountMax = int(kwargs.get('ai_corpses_max', 20))
+        self.as_corpseRemovalTime = int(kwargs.get('ai_corpses_removal', 300))
+        self.asm_disable = int(bool(kwargs.get('disable_ai', 0)))
+        self.asm_hordeCooldown = int(kwargs.get('horde_cooldown', 900))
+        self.asm_maxMultiplier = float(kwargs.get('asm_maxMultiplier', 1))
+        self.asm_percent = int(kwargs.get('asm_percent', 60))
         self.bind_ip = kwargs.get('bind_ip', '0.0.0.0')
-        self.enable_rcon = kwargs.get('enable_rcon', True)
-        self.enable_upnp = kwargs.get('enable_upnp', False)
-        self.enable_whitelist = kwargs.get('enable_whitelist', False)
-        self.g_craftingSpeedMultiplier = kwargs.get('crafting_multiplier', 1)
-        self.g_gameRules_Camera = kwargs.get('camera', 0)
-        self.g_gameRules_bases = kwargs.get('base_rules', 1)
-        self.g_idleKickTime = kwargs.get('idle_kick_seconds', 300)
-        self.g_maxHealthMultiplier = kwargs.get('player_health_multiplier', 1)
-        self.g_pingLimitGraceTimer = kwargs.get('ping_limit_grace_timer', 60)
-        self.g_pingLimitTimer = kwargs.get('ping_limit_timer', 60)
-        self.g_pinglimit = kwargs.get('ping_limit', 0)
-        self.g_playerFoodDecay = kwargs.get('hunger_rate', 0.2777)
-        self.g_playerFoodDecaySprinting = kwargs.get('hunger_rate_while_running', 0.34722)
-        self.g_playerHealthRegen = kwargs.get('health_regen_rate', 0.111)
-        self.g_playerInfiniteStamina = kwargs.get('infinite_stamina', 0)
-        self.g_playerTemperatureEnvRate = kwargs.get('tempertature_environment_speed', 0.0005)
-        self.g_playerTemperatureSpeed = kwargs.get('temperature_speed', 1.0)
-        self.g_playerWaterDecay = kwargs.get('thirst_rate', 0.4861)
-        self.g_playerWaterDecaySprinting = kwargs.get('thirst_rate_while_running', 0.607638)
-        self.g_playerWeightLimit = kwargs.get('player_weight_limit', 40)
-        self.g_respawnAtBaseTime = kwargs.get('respawn_at_base_timeout', 30)
-        self.grant_guides = kwargs.get('grant_guides', False)
-        self.http_password = kwargs.get('rcon_password', 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0")))
-        self.ism_maxCount = kwargs.get('loot_concurrent_item_spawned', 750)
-        self.ism_percent = kwargs.get('loot_spawner_percent', 20)
-        self.max_players = kwargs.get('max_players', 36)
-        self.max_uptime = kwargs.get('max_uptime', 12)
-        self.miscreated_map = kwargs.get('map', 'islands')
+        self.enable_rcon = bool(kwargs.get('enable_rcon', True))
+        self.enable_upnp = bool(kwargs.get('enable_upnp', False))
+        self.enable_whitelist = bool(kwargs.get('enable_whitelist', False))
+        self.g_craftingSpeedMultiplier = float(kwargs.get('crafting_multiplier', 1))
+        self.g_gameRules_Camera = int(kwargs.get('camera', 0))
+        self.g_gameRules_bases = int(kwargs.get('base_rules', 1))
+        self.g_idleKickTime = int(kwargs.get('idle_kick_seconds', 300))
+        self.g_maxHealthMultiplier = float(kwargs.get('player_health_multiplier', 1))
+        self.g_pingLimitGraceTimer = int(kwargs.get('ping_limit_grace_timer', 60))
+        self.g_pingLimitTimer = int(kwargs.get('ping_limit_timer', 60))
+        self.g_pinglimit = int(kwargs.get('ping_limit', 0))
+        self.g_playerFoodDecay = float(kwargs.get('hunger_rate', 0.2777))
+        self.g_playerFoodDecaySprinting = float(kwargs.get('hunger_rate_while_running', 0.34722))
+        self.g_playerHealthRegen = float(kwargs.get('health_regen_rate', 0.111))
+        self.g_playerInfiniteStamina = int(bool(kwargs.get('infinite_stamina', 0)))
+        self.g_playerTemperatureEnvRate = float(kwargs.get('tempertature_environment_speed', 0.0005))
+        self.g_playerTemperatureSpeed = float(kwargs.get('temperature_speed', 1.0))
+        self.g_playerWaterDecay = float(kwargs.get('thirst_rate', 0.4861))
+        self.g_playerWaterDecaySprinting = float(kwargs.get('thirst_rate_while_running', 0.607638))
+        self.g_playerWeightLimit = int(kwargs.get('player_weight_limit', 40))
+        self.g_respawnAtBaseTime = int(kwargs.get('respawn_at_base_timeout', 30))
+        self.grant_guides = bool(kwargs.get('grant_guides', False))
+        self.http_password = str(kwargs.get('rcon_password', 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0"))))
+        self.ism_maxCount = int(kwargs.get('loot_concurrent_item_spawned', 750))
+        self.ism_percent = float(kwargs.get('loot_spawner_percent', 20))
+        self.max_players = int(kwargs.get('max_players', 36))
+        self.max_uptime = float(kwargs.get('max_uptime', 12))
+        self.miscreated_map = str(kwargs.get('map', 'islands'))
         self.mod_ids = kwargs.get('mod_ids', False)
-        self.pcs_maxCorpseTime = kwargs.get('max_corpse_time', 1200)
-        self.pcs_maxCorpses = kwargs.get('max_player_corpses', 20)
-        self.port = kwargs.get('port', 64090)
+        self.pcs_maxCorpseTime = int(kwargs.get('max_corpse_time', 1200))
+        self.pcs_maxCorpses = int(kwargs.get('max_player_corpses', 20))
+        self.port = int(kwargs.get('port', 64090))
         self.reset_base_despawn_clan_ids = kwargs.get('reset_base_despawn_clan_ids', list())
         self.reset_base_despawn_ids = kwargs.get('reset_base_despawn_ids', list())
         self.reset_bases = kwargs.get('reset_bases', False)
@@ -71,22 +71,22 @@ class SmssConfig:
         self.reset_vehicle_despawn_clan_ids = kwargs.get('reset_vehicle_despawn_clan_ids', list())
         self.reset_vehicle_despawn_ids = kwargs.get('reset_vehicle_despawn_ids', list())
         self.reset_vehicles = kwargs.get('reset_vehicles', False)
-        self.server_id = kwargs.get('server_id', False)
+        self.server_id = int(kwargs.get('server_id', False))
         self.sv_motd = kwargs.get('motd_a', False)
-        self.sv_msg_conn = kwargs.get('connection_messages', False)
-        self.sv_msg_death = kwargs.get('death_messages', False)
-        self.sv_noBannedAccounts = kwargs.get('no_bans', False)
-        self.sv_servername = kwargs.get('server_name', 'Miscreated Self-hosted Server #{}'.format(str(randint(0, 999999)).rjust(6, "0")))
+        self.sv_msg_conn = int(bool(kwargs.get('connection_messages', 0)))
+        self.sv_msg_death = int(bool(kwargs.get('death_messages', 0)))
+        self.sv_noBannedAccounts = int(bool(kwargs.get('no_bans', 0)))
+        self.sv_servername = str(kwargs.get('server_name', 'Miscreated Self-hosted Server #{}'.format(str(randint(0, 999999)).rjust(6, "0"))))
         self.sv_url = kwargs.get('motd_b', False)
-        self.theros_admin_mod = kwargs.get('theros_admin_mod', False)
+        self.theros_admin_mod = bool(kwargs.get('theros_admin_mod', False))
         self.theros_admin_mod_admin_ids = kwargs.get('theros_admin_mod_admins', False)
-        self.time_day_minutes = kwargs.get('time_day_minutes', 390)
-        self.time_night_minutes = kwargs.get('time_night_minutes', 82.5)
+        self.time_day_minutes = float(kwargs.get('time_day_minutes', 390))
+        self.time_night_minutes = float(kwargs.get('time_night_minutes', 82.5))
         self.wm_forceTime = kwargs.get('force_time', -1)
-        self.wm_pattern = kwargs.get('force_pattern', -1)
+        self.wm_pattern = int(kwargs.get('force_pattern', -1))
         self.wm_timeOffset = kwargs.get('time_offset', -1)
-        self.wm_timeScale = self.get_timeScale()
-        self.wm_timeScaleNight = self.get_timeScaleNight()
+        self.wm_timeScale = float(self.get_timeScale())
+        self.wm_timeScaleNight = float(self.get_timeScaleNight())
 
         self.script_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -322,20 +322,36 @@ def launch_miscreated_server(smss):
     server_options = ' '.join(str(e) for e in server_options)
 
     server_cmd = '"{}"'.format(smss.miscreated_server_cmd) + ' ' + server_options
-
 #║╔╗╚╝─═╟╢
+    print("""
+══════════════════════════════════════════════════════════════════════════════
+                              hosting.cfg cvars
+══════════════════════════════════════════════════════════════════════════════
+{cvars}
+══════════════════════════════════════════════════════════════════════════════
+══════════════════════════════════════════════════════════════════════════════
+  [1m[36mServer Name: [1m[33m{sv_servername}[0m
+          [1m[36mMap: [1m[33m{map}[0m
+    [1m[36mGame Port: [1m[33m{port}[0m
+    [1m[36mRCON Port: [1m[33m{rcon}[0m
+══════════════════════════════════════════════════════════════════════════════
 
-    logging.info("Launching Miscreated server process...")
-    logging.info("==============================================================================")
-    logging.info("|                                                                            |")
-    logging.info("|                          DO NOT CLOSE THIS WINDOW                          |")
-    logging.info("|                                                                            |")
-    logging.info("|----------------------------------------------------------------------------|")
-    logging.info("|                                                                            |")    
-    logging.info("|  This window maintains the Miscreated server. If this window is closed     |")
-    logging.info("|  the server will not automatically restart.                                |")
-    logging.info("|                                                                            |")
-    logging.info("==============================================================================")
+Launching Miscreated server process...
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                          [1m[31mDO NOT CLOSE THIS WINDOW[0m                          ║
+║                                                                            ║
+╟────────────────────────────────────────────────────────────────────────────╢
+║                                                                            ║    
+║  This window maintains the Miscreated server. If this window is closed     ║
+║  the server will not automatically restart.                                ║
+║                                                                            |
+╚════════════════════════════════════════════════════════════════════════════╝
+""".format(cvars=get_cvars(smss),
+           map=smss.miscreated_map,
+           port=smss.port,
+           rcon=smss.port+4,
+           sv_servername=smss.sv_servername))
     logging.debug(server_cmd)
     asyncio.run(run(server_cmd))
 
@@ -422,6 +438,66 @@ def object_timer_reset(smss):
     if vehicles:
         logging.debug(vehicles_sql)
         get_result_set(smss.miscreated_server_db, vehicles_sql)
+
+def get_cvars(smss):
+    hosting_cfg_cvars = {
+        'ai': {
+            'asm_disable': smss.asm_disable,
+            'asm_hordeCooldown': smss.asm_hordeCooldown,
+            'asm_maxMultiplier': smss.asm_maxMultiplier,
+            'asm_percent': smss.asm_percent
+        },
+        'corpses': {
+            'as_corpseCountMax': smss.as_corpseCountMax,
+            'as_corpseRemovalTime': smss.as_corpseRemovalTime,
+            'pcs_maxCorpseTime': smss.pcs_maxCorpseTime,
+            'pcs_maxCorpses': smss.pcs_maxCorpses
+        },
+        'loot': {
+            'ism_maxCount': smss.ism_maxCount,
+            'ism_percent': smss.ism_percent
+        },
+        'players': {
+            'g_craftingSpeedMultiplier': smss.g_craftingSpeedMultiplier,
+            'g_gameRules_Camera': smss.g_gameRules_Camera,
+            'g_gameRules_bases': smss.g_gameRules_bases,
+            'g_idleKickTime': smss.g_idleKickTime,
+            'g_maxHealthMultiplier': smss.g_maxHealthMultiplier,
+            'g_pingLimitGraceTimer': smss.g_pingLimitGraceTimer,
+            'g_pingLimitTimer': smss.g_pingLimitTimer,
+            'g_pinglimit': smss.g_pinglimit,
+            'g_playerFoodDecay': smss.g_playerFoodDecay,
+            'g_playerFoodDecaySprinting': smss.g_playerFoodDecaySprinting,
+            'g_playerHealthRegen': smss.g_playerHealthRegen,
+            'g_playerInfiniteStamina': smss.g_playerInfiniteStamina,
+            'g_playerTemperatureEnvRate': smss.g_playerTemperatureEnvRate,
+            'g_playerTemperatureSpeed': smss.g_playerTemperatureSpeed,
+            'g_playerWaterDecay': smss.g_playerWaterDecay,
+            'g_playerWaterDecaySprinting': smss.g_playerWaterDecaySprinting,
+            'g_respawnAtBaseTime': smss.g_respawnAtBaseTime
+        },
+        'server': {
+            'http_password': '*'*len(smss.http_password),
+            'max_uptime': smss.max_uptime,
+            'steam_ugc': condense_mods(smss),
+            'sv_msg_conn': smss.sv_msg_conn,
+            'sv_msg_death': smss.sv_msg_death,
+            'sv_noBannedAccounts': smss.sv_noBannedAccounts,
+            'sv_servername': smss.sv_servername
+        },
+        'time and weather': {
+            'wm_forceTime': smss.wm_forceTime,
+            'wm_pattern': smss.wm_pattern,
+            'wm_timeOffset': smss.wm_timeOffset,
+            'wm_timeScale': smss.wm_timeScale,
+            'wm_timeScaleNight': smss.wm_timeScaleNight
+        }
+    }
+    if smss.sv_motd:
+        hosting_cfg_cvars['server']['sv_motd'] = smss.sv_motd
+    if smss.sv_url:
+        hosting_cfg_cvars['server']['sv_url'] = smss.sv_url
+    return pformat(hosting_cfg_cvars, indent=2)
 
 def remove_mods(smss):
     mods_dir = Path('{}/Mods'.format(smss.miscreated_server_path))
@@ -531,16 +607,18 @@ def main():
 
     # FIXME - If configuration is forced, run configurator to create the JSON file
 
-    try:
-        with open(args.config) as f:
-            json_config = json.load(f)
-    except Exception as e:
-        logging.debug(e)
-        logging.debug("Configuration file load error. Using default configuration")
-        json_config={}
-
     run_server = True
     while run_server:
+        try:
+            with open(args.config) as f:
+                json_config = json.load(f)
+        except Exception as e:
+            logging.debug(e)
+            logging.debug("Configuration file load error. Using default configuration")
+            json_config={}
+
+        logging.debug(json_config)
+
         smss = SmssConfig(**json_config)
 
         update_cfg(smss.miscreated_server_config, 'as_corpseCountMax', smss.as_corpseCountMax)
