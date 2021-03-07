@@ -4,7 +4,7 @@ This is a complete rewrite of the legacy *Simplified Miscreated Server Setup* sc
 The script doesn't yet auto-update, nor does it currently prompt for server values. Rather, all desired configurable values may be populated in a [smss.json](smss.example.json) configuration file. If values aren't specified, defaults will be used.
 
 ## Running the script
-At a minumum, download and place both [smss.cmd](smss.cmd) and [smss-core.py](smss-core.py) in an empty directory. Execute the [smss.cmd](smss.cmd) script to setup and start the server. While the server will start with a default configuration, it is suggested you create an [smss.json](smss.example.json) file with at least the `server_name` configured.
+At a minumum, download and place both [SMSSv2.cmd](SMSSv2.cmd) and [SMSSv2.py](SMSSv2.py) in an empty directory. Execute the [SMSSv2.cmd](SMSSv2.cmd) script to setup and start the server. While the server will start with a default configuration, it is suggested you create an [smss.json](smss.example.json) file with at least the `server_name` configured.
 
 ### Configurable JSON values
 If a variable has a `hosting.cfg` equivalent, you can find a description for most of the variables here: [https://servers.miscreatedgame.com/help](https://servers.miscreatedgame.com/help)
@@ -42,8 +42,6 @@ If a variable has a `hosting.cfg` equivalent, you can find a description for mos
 | max_players | `36` | N/A |
 | max_uptime | `12` | max_uptime |
 | mod_ids | `(empty list)` | steam_ugc |
-| motd_a | `false` | sv_motd |
-| motd_b | `false` | sv_url |
 | no_bans | `false` | sv_noBannedAccounts |
 | ping_limit | `0` | g_pinglimit |
 | ping_limit_grace_timer | `60` | g_pingLimitGraceTimer |
@@ -52,22 +50,23 @@ If a variable has a `hosting.cfg` equivalent, you can find a description for mos
 | player_weight_limit | `40` | g_playerWeightLimit |
 | port | `64090` | N/A |
 | rcon_password | `(randomized)` | http_password |
-| reset_base_despawn_clan_ids | `(empty list)` | N/A |
-| reset_base_despawn_ids | `(empty list)` | N/A |
+| reset_base_clan_ids | `(empty list)` | N/A |
+| reset_base_owner_ids | `(empty list)` | N/A |
 | reset_bases | `false` | N/A |
-| reset_tent_despawn_clan_ids | `(empty list)` | N/A |
-| reset_tent_despawn_ids | `(empty list)` | N/A |
+| reset_tent_clan_ids | `(empty list)` | N/A |
+| reset_tent_owner_ids | `(empty list)` | N/A |
 | reset_tents | `false` | N/A |
-| reset_vehicle_despawn_clan_ids | `(empty list)` | N/A |
-| reset_vehicle_despawn_ids | `(empty list)` | N/A |
+| reset_vehicle_clan_ids | `(empty list)` | N/A |
+| reset_vehicle_owner_ids | `(empty list)` | N/A |
 | reset_vehicles | `false` | N/A |
 | respawn_at_base_timeout | `30` | g_respawnAtBaseTime |
 | server_id | `100` or first value in db | N/A |
 | server_name | `Miscreated Self-hosted Server #(random#)` | sv_servername |
+| sv_motd | `false` | sv_motd |
+| sv_url | `false` | sv_url |
 | temperature_speed | `1.0` | g_playerTemperatureSpeed |
 | tempertature_environment_speed | `0.0005` | g_playerTemperatureEnvRate |
-| theros_admin_mod | `false` | N/A |
-| theros_admin_mod_admin_ids | `false` | N/A |
+| theros_admin_ids | `(empty list)` | N/A |
 | thirst_rate | `0.4861` | g_playerWaterDecay |
 | thirst_rate_while_running | `0.607638` | g_playerWaterDecaySprinting |
 | time_day_minutes | `390` | wm_timeScale |
@@ -106,11 +105,10 @@ If you wish to refresh bases for admins, but only vehicles and tents for two Ste
 }
 ```
 ## Theros' Admin Mod
-To make it easy to get started with *admin powers* on a server you can enable [Theros' admin mod](https://steamcommunity.com/sharedfiles/filedetails/?id=2011185435) and specify the SteamID64 accounts for admins in the [smss.json](smss.example.json) file:
+To make it easy to get started with *admin powers* on a server in [smss.json](smss.example.json) you can specify a list of SteamID64 accounts to act as admins and this will enable [Theros' admin mod](https://steamcommunity.com/sharedfiles/filedetails/?id=2011185435):
 ```json
 {
-    "theros_admin_mod": true,
-    "theros_admin_mod_admin_ids": [76561198027894420, 76561198822937906]
+    "theros_admin_ids": [76561198027894420, 76561198822937906]
 }
 ```
 Of course, you'll want to use your SteamID64 values and not the values in the above examples.
