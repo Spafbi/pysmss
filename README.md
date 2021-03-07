@@ -105,7 +105,7 @@ If you wish to refresh bases for admins, but only vehicles and tents for two Ste
 }
 ```
 ## Theros' Admin Mod
-To make it easy to get started with *admin powers* on a server in [smss.json](smss.example.json) you can specify a list of SteamID64 accounts to act as admins and this will enable [Theros' admin mod](https://steamcommunity.com/sharedfiles/filedetails/?id=2011185435):
+To make it easy to get started with *admin powers* on a server, in [smss.json](smss.example.json) you can specify a list of SteamID64 accounts to act as admins and this will enable [Theros' admin mod](https://steamcommunity.com/sharedfiles/filedetails/?id=2011185435):
 ```json
 {
     "theros_admin_ids": [76561198027894420, 76561198822937906]
