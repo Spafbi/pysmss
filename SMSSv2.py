@@ -162,6 +162,17 @@ class SmssConfig:
 
 
     def calc_distance(self, x1, y1, x2, y2):
+        """Calculates the distance between two objects on a plane
+
+        Args:
+            x1 (float): X position value for object 1
+            y1 (float): Y position value for object 1
+            x2 (float): X position value for object 2
+            y2 (float): Y position value for object 2
+
+        Returns:
+            float: [description]
+        """
         dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
         return dist
 
@@ -202,6 +213,11 @@ class SmssConfig:
 
 
     def get_bases_sql(self):
+        """SQL command to look up all bases
+
+        Returns:
+            string: SQL command
+        """
         sql = """
             SELECT (AccountID + 76561197960265728) AS Owner,
                 ROUND(PosX,5) AS PosX,
@@ -230,6 +246,12 @@ class SmssConfig:
 
 
     def get_cvars(self):
+        """Returns a list of hosting.cfg cvars and their values. Primarily for
+           logging purposts.
+
+        Returns:
+            dictionary: Dictionary of cvars by category, cvar name, and value
+        """
         hosting_cfg_cvars = {
             'ai': {
                 'asm_disable': self.asm_disable,
@@ -292,6 +314,14 @@ class SmssConfig:
 
 
     def get_mod_name(self, mod_id):
+        """Retrieves the name of a Steam Workshop mod
+
+        Args:
+            mod_id (int): Steam Workshop file id
+
+        Returns:
+            string: Steam Workshop mod name
+        """
         url="https://steamcommunity.com/sharedfiles/filedetails/?id={}".format(mod_id)
         try:
             reqs = requests.get(url)
@@ -307,6 +337,12 @@ class SmssConfig:
 
 
     def get_mod_titles(self):
+        """Returns a list of mod ids and their names, formatted for output in
+           the server start summary screen.
+
+        Returns:
+            string: list of mod ids and their names
+        """
         if not len(self.steam_ugc):
             return "<none>"
 
@@ -316,13 +352,23 @@ class SmssConfig:
         for mod in mod_ids:
             this_line = ''
             if not first:
-                this_line = '\n               '
+                this_line = '\n'+' '*15
             mod_list = mod_list + this_line + self.get_mod_name(mod)
             first=False
         return mod_list
 
 
     def get_result_set(self, sql):
+        """The executes a passed SQL command and returns a result set. If
+           INSERT or UPDATE is detected, a write is assumed and a commit is
+           also performed.
+
+        Args:
+            sql (string): SQL command
+
+        Returns:
+            list: a result set resulting from the execution of the SQL command
+        """
         if not os.path.exists(self.miscreated_server_db):
             logging.debug('Database not yet created')
             return False
@@ -427,7 +473,16 @@ class SmssConfig:
 
 
     def get_start_server_message(self):
-        #║╔╗╚╝─═╟╢
+        """Returns a block of text to be used for the server start summary
+           screen
+
+        Returns:
+            string: server summary string
+        """
+
+        # The following is just some ASCII characters for creating boxes
+        # ║╔╗╚╝─═╟╢
+        
         message = '═'*78+'\r\n'+'═'*78+'\r\n'\
                   '  [1m[36mServer Name: [1m[33m{sv_servername}[0m\r\n'\
                   '          [1m[36mMap: [1m[33m{map}[0m\r\n'\
@@ -449,6 +504,11 @@ class SmssConfig:
 
 
     def get_tents_sql(self):
+        """SQL command to look up all tents
+
+        Returns:
+            string: SQL command
+        """
         sql = """
             SELECT StructureID,
                 ROUND(PosX,5) AS PosX,
@@ -460,6 +520,11 @@ class SmssConfig:
 
 
     def get_vehicles_sql(self):
+        """SQL command to look up all vehicles
+
+        Returns:
+            string: SQL command
+        """
         sql = """
             SELECT VehicleID,
                 ROUND(PosX,5) AS PosX,
@@ -490,6 +555,8 @@ class SmssConfig:
 
 
     def launch_server(self):
+        """Launch a Miscreated server instance
+        """
         logging.debug('method: launch_server')
 
         semaphore_file = Path('{}/smss.managed'.format(self.miscreated_server_path))
@@ -594,6 +661,8 @@ class SmssConfig:
 
 
     def reset_base_timers(self):
+        """Reset base timers according to configured settings
+        """
         if self.reset_bases:
             sql = "UPDATE Structures SET AbandonTimer=2419200 WHERE ClassName='PlotSign';"
             self.get_result_set(sql)
@@ -617,6 +686,14 @@ class SmssConfig:
 
 
     def reset_base_object_timers(self, objects, owner_ids, update_sql, thing):
+        """Reset timers bases on passed settings.
+
+        Args:
+            objects (dictionary): result set of objects to be reset
+            owner_ids (list): 'owner' ids for which objects should be reset
+            update_sql (string): SQL command to perform update
+            thing (string): the type of object being reset - for logging purposes
+        """
         bases = self.get_result_set(self.get_bases_sql())
 
         if not bases:
@@ -645,6 +722,8 @@ class SmssConfig:
 
 
     def reset_tent_timers(self):
+        """Reset tent timers according to configured settings
+        """
         if self.reset_tents:
             sql = "UPDATE Structures SET AbandonTimer=2419200 WHERE ClassName like '%tent%';"
             self.get_result_set(sql)
@@ -663,6 +742,8 @@ class SmssConfig:
 
 
     def reset_vehicle_timers(self):
+        """Reset vehicle timers according to configured settings
+        """
         if self.reset_vehicles:
             sql = "UPDATE Vehicles SET AbandonTimer=2419200;"
             self.get_result_set(sql)
