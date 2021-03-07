@@ -44,11 +44,9 @@ curl -L %PIPURL% -o "%SMSSTEMP%/get-pip.py"
 goto :moduleCheck
 
 :moduleCheck
+echo Validating support modules...
 for %%x in (bs4 colorama requests) do (
-  if not exist %PYTHONDIR%\Lib\site-packages\%%x\__init__.py (
-    echo Installing pip module %%x
-    "%PYTHONBIN%" -m pip install -U %%x --no-warn-script-location
-  )
+  "%PYTHONBIN%" -m pip install -q -U %%x --no-warn-script-location
 )
 goto :runScript
 
