@@ -76,10 +76,10 @@ If a variable has a `hosting.cfg` equivalent, you can find a description for mos
 Note: the `enable_upnp` setting currently has no effect. Server ports must be manually forwarded through your firewall. The first four ports should be forwarded as UDP, the fifth port (RCON) as TCP. If you use the default base port of `64090`, the UDP ports to be forwarded are `64090`-`64093`, and the TCP port is `64094`.
 
 ### Special files
-The following files may be placed in the script directory to invoke special script behavior, just create an empty file with the desired name to trigger the action:
-* `debug` or `debug.txt` - Enable verbose logging. Logging is also written to `smss.log`.
-* `skip` or `skip.txt` - Skips validating the Miscreated server files - don't do this until *after* the script has been run at least once resulting in the server launching as expected.
-* `stop` or `stop.txt` - If this file exists the Miscreated server will not restart upon termination.
+Any files *starting* with these filenames which are placed in the script directory to invoke special script behavior, just create an empty file with the desired name to trigger the action:
+* `debug` - Enable verbose logging. Logging is also written to `smss.log`.
+* `skip` - Skips validating the Miscreated server files - don't do this until *after* the script has been run at least once resulting in the server launching as expected.
+* `stop` - If this file exists the Miscreated server will not restart upon termination.
 
 ## Despawn prevention
 ### Global despawn prevention
