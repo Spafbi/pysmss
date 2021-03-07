@@ -99,9 +99,9 @@ If you wish to refresh bases for admins, but only vehicles and tents for two Ste
 256512
 ```json
 {
-    "reset_base_despawn_clan_ids": [256512],
-    "reset_tent_despawn_ids": [76561198027894420, 76561198822937906],
-    "reset_vehicle_despawn_ids": [76561198027894420, 76561198822937906]
+    "reset_base_clan_ids": [256512],
+    "reset_tent_owner_ids": [76561198027894420, 76561198822937906],
+    "reset_vehicle_owner_ids": [76561198027894420, 76561198822937906]
 }
 ```
 ## Theros' Admin Mod
@@ -120,10 +120,9 @@ There is a basic [smss.json](smss.example.json) example file you may view. Here'
     "port": 64090,
     "rcon_password": "secret-password",
     "reset_bases": true,
-    "reset_tent_despawn_ids": [76561198027894420, 76561198822937906],
+    "reset_tent_owner_ids": [76561198027894420, 76561198822937906],
     "server_name": "My Miscreated server",
-    "theros_admin_mod": true,
-    "theros_admin_mod_admin_ids": [76561198027894420, 76561198822937906]
+    "theros_admin_ids": [76561198027894420, 76561198822937906]
 }
 ```
 The above example sets:
@@ -132,5 +131,4 @@ The above example sets:
 * resets the despawn timer for all bases
 * resets tents at bases belonging to the two specified SteamID64 accounts
 * sets the server name to *My Miscreated server*
-* enables the admin mod
-* and adds two SteamID64 accounts to the admin mod's configuration file 
+* and adds two SteamID64 accounts as admins - this enables the admin mod and updates the configuration file 
