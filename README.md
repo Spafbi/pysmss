@@ -1,5 +1,5 @@
 # Simplified Miscreated Server Setup - Python Edition
-This is a complete rewrite of the legacy *Simplified Miscreated Server Setup* script. It was written in just a few hours and is somewhat sloppy...but it works.
+This is a complete rewrite of the legacy *Simplified Miscreated Server Setup* script.
 
 The script doesn't yet auto-update, nor does it currently prompt for server values. Rather, all desired configurable values may be populated in a [smss.json](smss.example.json) configuration file. If values aren't specified, defaults will be used.
 
