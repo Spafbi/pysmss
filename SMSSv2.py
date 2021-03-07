@@ -329,10 +329,17 @@ class SmssConfig:
 
         logging.debug(sql)
 
+        # If 'insert ' or 'update ' exist in the sql statement, we're probably
+        # doing a database write and will want to commit the changes.
+        commit = (sql.lower().find('insert ') >= 0) or \
+                 (sql.lower().find('update ') >= 0)
+
         conn = sqlite3.connect(self.miscreated_server_db)
         c = conn.cursor()
         try:
             results = c.execute(sql)
+            if commit:
+                conn.commit()
         except sqlite3.Error as e:
             print(e)
             return None
