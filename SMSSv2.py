@@ -96,8 +96,9 @@ class SmssConfig:
         self.theros_admin_ids = kwargs.get('theros_admin_ids', list())
         self.time_day_minutes = float(kwargs.get('time_day_minutes', 390))
         self.time_night_minutes = float(kwargs.get('time_night_minutes', 82.5))
+        self.wm_effectScaleOffset = float(kwargs.get('wm_effectScaleOffset', 0.00))
         self.wm_forceTime = float(kwargs.get('force_time', -1))
-        self.wm_pattern = int(kwargs.get('force_pattern', -1))
+        self.wm_pattern = int(kwargs.get('wm_pattern', -1))
         self.wm_timeOffset = float(kwargs.get('time_offset', -1))
 
         # Variables which are derived from passed/default values
@@ -309,6 +310,7 @@ class SmssConfig:
                 'sv_servername': self.sv_servername
             },
             'time and weather': {
+                'wm_effectScaleOffset': self.wm_effectScaleOffset,
                 'wm_forceTime': self.wm_forceTime,
                 'wm_pattern': self.wm_pattern,
                 'wm_timeOffset': self.wm_timeOffset,
@@ -858,6 +860,7 @@ class SmssConfig:
         self.replace_config_lines(filename, 'sv_msg_death', self.sv_msg_death)
         self.replace_config_lines(filename, 'sv_noBannedAccounts', self.sv_noBannedAccounts)
         self.replace_config_lines(filename, 'sv_servername', self.sv_servername)
+        self.replace_config_lines(filename, 'wm_effectScaleOffset', self.wm_effectScaleOffset)
         self.replace_config_lines(filename, 'wm_forceTime', self.wm_forceTime)
         self.replace_config_lines(filename, 'wm_pattern', self.wm_pattern)
         self.replace_config_lines(filename, 'wm_timeOffset', self.wm_timeOffset)
