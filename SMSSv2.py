@@ -68,6 +68,8 @@ class SmssConfig:
         self.http_password = str(kwargs.get('rcon_password', 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0"))))
         self.ism_maxCount = int(kwargs.get('loot_concurrent_item_spawned', 750))
         self.ism_percent = float(kwargs.get('loot_spawner_percent', 20))
+        self.log_Verbosity = int(kwargs.get('log_Verbosity', 0))
+        self.log_WriteToFileVerbosity = int(kwargs.get('log_WriteToFileVerbosity', 3))
         self.max_players = int(kwargs.get('max_players', 36))
         self.max_uptime = float(kwargs.get('max_uptime', 12))
         self.miscreated_map = str(kwargs.get('map', 'islands'))
@@ -298,6 +300,8 @@ class SmssConfig:
             },
             'server': {
                 'http_password': '*'*len(self.http_password),
+                'log_Verbosity': self.log_Verbosity,
+                'log_WriteToFileVerbosity': self.log_WriteToFileVerbosity,
                 'max_uptime': self.max_uptime,
                 'sv_msg_conn': self.sv_msg_conn,
                 'sv_msg_death': self.sv_msg_death,
@@ -845,6 +849,8 @@ class SmssConfig:
         self.replace_config_lines(filename, 'http_password', self.http_password)
         self.replace_config_lines(filename, 'ism_maxCount', self.ism_maxCount)
         self.replace_config_lines(filename, 'ism_percent', self.ism_percent)
+        self.replace_config_lines(filename, 'log_Verbosity', self.log_Verbosity)
+        self.replace_config_lines(filename, 'log_WriteToFileVerbosity', self.log_WriteToFileVerbosity)
         self.replace_config_lines(filename, 'max_uptime', self.max_uptime)
         self.replace_config_lines(filename, 'pcs_maxCorpseTime', self.pcs_maxCorpseTime)
         self.replace_config_lines(filename, 'pcs_maxCorpses', self.pcs_maxCorpses)
