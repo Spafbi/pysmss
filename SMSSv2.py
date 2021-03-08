@@ -5,6 +5,8 @@ from glob import glob
 from pathlib import Path
 from pprint import pprint, pformat
 from random import randint
+from time import time
+from urllib import request
 import asyncio
 import fileinput
 import json
@@ -15,6 +17,7 @@ import requests
 import shutil
 import sqlite3
 import sys
+import zipfile
 
 sys.path.insert(0, '')
 init()
@@ -641,7 +644,7 @@ class SmssConfig:
                                value
             value (string): the new value for the variable
         """
-        logging.debug('method: replace_config_lines')
+        logging.debug('method: replace_config_lines :: {}'.format(variable))
         # We haven't replaced anything yet so this value is False
         replaced = False
 
@@ -942,10 +945,17 @@ def main():
         smss.database_tricks()
 
         # Launch the Miscreated server
+        start_time = time()
         smss.launch_server()
 
         # Restart the server if a stop file does not exist
         run_server = not smss.stop_file_exists()
+
+        # If the server executed prematurely exit the server loop
+        if time() - start_time < 10:
+            print("The server process exited in less than 10 seconds. Run with "\
+                  "a debug file to create a logfile.")
+            run_server = False
 
 if __name__ == '__main__':
     main()
