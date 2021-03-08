@@ -495,12 +495,12 @@ class SmssConfig:
         # The following is just some ASCII characters for creating boxes
         # ║╔╗╚╝─═╟╢
         
-        message = '═'*78+'\r\n'+'═'*78+'\r\n'\
-                  '     [1m[36mServer Name: [1m[33m{sv_servername}[0m\r\n'\
-                  '             [1m[36mMap: [1m[33m{map}[0m\r\n'\
-                  '            [1m[36mMods: [1m[33m{mods}[0m\r\n'\
-                  '[1m[36mGame Ports (UDP): [1m[33m{port}[0m\r\n'\
-                  ' [1m[36mRCON Port (TCP): [1m[33m{rcon}[0m\r\n'\
+        message = '═'*118+'\r\n'+'═'*118+'\r\n'\
+                  '       [1m[36mServer Name: [1m[33m{sv_servername}[0m\r\n'\
+                  '               [1m[36mMap: [1m[33m{map}[0m\r\n'\
+                  '              [1m[36mMods: [1m[33m{mods}[0m\r\n'\
+                  '  [1m[36mGame Ports (UDP): [1m[33m{port}[0m\r\n'\
+                  '   [1m[36mRCON Port (TCP): [1m[33m{rcon}[0m\r\n'\
                   ''+'═'*78+'\r\n\r\n'\
                   'Launching Miscreated server process ({timestamp})...\r\n'\
                   '╔'+'═'*76+'╗\r\n'\
