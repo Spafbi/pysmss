@@ -495,12 +495,12 @@ class SmssConfig:
         # The following is just some ASCII characters for creating boxes
         # ║╔╗╚╝─═╟╢
         
-        message = '═'*78+'\r\n'+'═'*78+'\r\n'\
-                  '  [1m[36mServer Name: [1m[33m{sv_servername}[0m\r\n'\
-                  '          [1m[36mMap: [1m[33m{map}[0m\r\n'\
-                  '         [1m[36mMods: [1m[33m{mods}[0m\r\n'\
-                  '    [1m[36mGame Port: [1m[33m{port}[0m\r\n'\
-                  '    [1m[36mRCON Port: [1m[33m{rcon}[0m\r\n'\
+        message = '═'*118+'\r\n'+'═'*118+'\r\n'\
+                  '       [1m[36mServer Name: [1m[33m{sv_servername}[0m\r\n'\
+                  '               [1m[36mMap: [1m[33m{map}[0m\r\n'\
+                  '              [1m[36mMods: [1m[33m{mods}[0m\r\n'\
+                  '  [1m[36mGame Ports (UDP): [1m[33m{port}[0m\r\n'\
+                  '   [1m[36mRCON Port (TCP): [1m[33m{rcon}[0m\r\n'\
                   ''+'═'*78+'\r\n\r\n'\
                   'Launching Miscreated server process ({timestamp})...\r\n'\
                   '╔'+'═'*76+'╗\r\n'\
@@ -605,7 +605,7 @@ class SmssConfig:
             date=date.today(),
             map=self.miscreated_map,
             mods=self.get_mod_titles(),
-            port=self.port,
+            port=", ".join([str(i) for i in range(self.port,self.port+4)]),
             rcon=self.port+4,
             sv_servername=self.sv_servername,
             timestamp=timestamp)
