@@ -940,45 +940,47 @@ def main():
     # Output argparse values
     logging.debug(args)
 
-    # Start the server execution loop
-    run_server = True
-    while run_server:
-        try:
-            with open(args.config) as f:
-                json_config = json.load(f)
-        except Exception as e:
-            logging.debug(e)
-            logging.debug("Configuration file load error. Using default configuration")
-            json_config={}
+    # Read the JSON configuration file
+    try:
+        with open(args.config) as f:
+            json_config = json.load(f)
+    except Exception as e:
+        logging.debug(e)
+        logging.debug("Configuration file load error. Using default configuration")
+        json_config={}
 
-        logging.debug(json_config)
+    logging.debug(json_config)
 
-        smss = SmssConfig(**json_config)
+    smss = SmssConfig(**json_config)
 
-        # Update hosting.cfg
-        smss.update_hosting_cfg()
+    # Update hosting.cfg
+    smss.update_hosting_cfg()
 
-        # Update Theros' admin mod config
-        smss.update_admin_cfg()
+    # Update Theros' admin mod config
+    smss.update_admin_cfg()
 
-        # Prepare the Miscreated server
-        smss.prepare_server()
+    # Prepare the Miscreated server
+    smss.prepare_server()
 
-        # Execute database maintenance "tricks"
-        smss.database_tricks()
+    # Execute database maintenance "tricks"
+    smss.database_tricks()
 
-        # Launch the Miscreated server
-        start_time = time.time()
-        smss.launch_server()
+    # Record the time we start the server
+    start_time = time.time()
 
-        # Restart the server if a stop file does not exist
-        run_server = not smss.stop_file_exists()
+    # Launch the Miscreated server
+    smss.launch_server()
 
-        # If the server executed prematurely exit the server loop
-        if time.time() - start_time < 10:
-            print("The server process exited in less than 10 seconds. Run with "\
-                  "a debug file to create a logfile.")
-            run_server = False
+    # Restart the server if a stop file does not exist
+    run_server = not smss.stop_file_exists()
+
+    # If the server executed prematurely create a stop file
+    if time.time() - start_time < 10:
+        print("The server process exited in less than 10 seconds. Run with "\
+              "a debug file to create a logfile.")
+        f = open("stop", "w+")
+        f.write("Don't restart the Miscreated server")
+        f.close()
 
 if __name__ == '__main__':
     main()
