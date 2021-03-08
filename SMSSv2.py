@@ -364,7 +364,7 @@ class SmssConfig:
         for mod in mod_ids:
             this_line = ''
             if not first:
-                this_line = '\n'+' '*15
+                this_line = '\n'+' '*20
             mod_list = mod_list + this_line + self.get_mod_name(mod)
             first=False
         return mod_list
