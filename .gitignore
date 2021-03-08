@@ -1,11 +1,14 @@
 *.json
 *.log
-Pipfile*
 !smss.example.json
 MiscreatedServer
+Pipfile*
+SMSSv2_download.py
 SteamCMD
 debug
 debug.txt
+latest_release
+local_release
 python
 skip
 skip.txt
