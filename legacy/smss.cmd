@@ -12,6 +12,51 @@ set PYTHONBIN=%PYTHONDIR%\python.exe
 set PIPBIN=%PYTHONDIR%\Scripts\pip.exe
 set PIPURL=https://bootstrap.pypa.io/get-pip.py
 set SMSSTEMP=%BASEPATH%\temp
+set SMSSPY=%BASEPATH%\SMSSv2.py
+set SMSURL=%BASEPATH%\SMSSv2.py
+goto update
+
+:update
+echo Checking for new Simplified Miscreated Server Script updates...
+set GITURL=https://api.github.com/repos/Spafbi/pysmss/releases/latest
+set DOWNLOADURL=https://github.com/Spafbi/pysmss/releases/download/
+set CORESCRIPT=SMSSv2.py
+set DOWNLOAD=0
+powershell -Command "$request=${env:GITURL}; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Write-Output (Invoke-WebRequest -UseBasicParsing $request |ConvertFrom-Json |Select tag_name -ExpandProperty tag_name)">latest_release
+
+
+REM This if statement exists so I don't overwrite the core script while developing
+if exist .\.git\ (
+  set TARGETSCRIPT=SMSSv2_download.py
+) else (
+  set TARGETSCRIPT=%CORESCRIPT%
+)
+
+if exist "local_release" (
+  set /p CURRENT=<local_release
+) else (
+  set CURRENT=0
+)
+
+if exist "latest_release" (
+  set /p LATEST=<latest_release
+) else (
+  set LATEST=0
+)
+
+if "%LATEST%" == "0" if "%CURRENT%" == "0" (
+  echo No python script exists and the current release for download cannot be determined at this time.
+  echo No action taken.
+  call end
+)
+
+if not exist %TARGETSCRIPT% set DOWNLOAD=1
+if "%CURRENT%" == "0" set DOWNLOAD=1
+if not "%CURRENT%" == "%LATEST%" set DOWNLOAD=1
+if "%DOWNLOAD%" == "1" (
+  curl -L "%DOWNLOADURL%%LATEST%/%CORESCRIPT%">%TARGETSCRIPT%
+  echo %LATEST%>local_release
+)
 goto :pythonCheck
 
 :pythonCheck
@@ -53,8 +98,10 @@ for %%x in (bs4 colorama requests) do (
 goto :runScript
 
 :runScript
-"%PYTHONBIN%" .\smss-core.py
-goto :end
+"%PYTHONBIN%" %TARGETSCRIPT%
+if exist "%BASEPATH%\stop" goto :stopScript
+if exist "%BASEPATH%\stop.txt" goto :stopScript
+goto :getSMSSv2py
 
 :noSpaces
 echo This script cannot be run from a path having spaces.
