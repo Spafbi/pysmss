@@ -5,10 +5,10 @@ from glob import glob
 from pathlib import Path
 from pprint import pprint, pformat
 from random import randint
-from time import time
 from urllib import request
 import asyncio
 import fileinput
+import itertools
 import json
 import logging
 import math
@@ -17,6 +17,8 @@ import requests
 import shutil
 import sqlite3
 import sys
+import threading
+import time
 import zipfile
 
 sys.path.insert(0, '')
@@ -121,6 +123,9 @@ class SmssConfig:
         # Set the server id
         if not self.server_id:
            self.server_id = self.get_server_id_from_db()
+
+        # For spinner support
+        self.spinner_done=False
 
         # Dump variables for this object if debugging is turned on
         logging.debug(vars(self))
@@ -764,6 +769,16 @@ class SmssConfig:
         self.reset_base_object_timers(vehicles, self.reset_vehicle_owner_ids, sql, 'vehicle')
 
 
+    def spinner(self):
+        for c in itertools.cycle(['|', '/', '-', '\\']):
+            if self.spinner_done:
+                break
+            sys.stdout.write('\rloading ' + c)
+            sys.stdout.flush()
+            time.sleep(0.1)
+        sys.stdout.write('\r')
+
+
     def stop_file_exists(self):
         """If any file staring with "stop" exists in the script directory then
            return True
@@ -869,7 +884,12 @@ class SmssConfig:
         
         # Execute the command
         logging.info('Validating Miscreated Server installation. This could take a while...')
+
+        self.spinner_done=False
+        t = threading.Thread(target=self.spinner)
+        t.start()
         asyncio.run(self.run(install_cmd))
+        self.spinner_done=True
         logging.info('Miscreated Server installation validated')
 
 
@@ -945,14 +965,14 @@ def main():
         smss.database_tricks()
 
         # Launch the Miscreated server
-        start_time = time()
+        start_time = time.time()
         smss.launch_server()
 
         # Restart the server if a stop file does not exist
         run_server = not smss.stop_file_exists()
 
         # If the server executed prematurely exit the server loop
-        if time() - start_time < 10:
+        if time.time() - start_time < 10:
             print("The server process exited in less than 10 seconds. Run with "\
                   "a debug file to create a logfile.")
             run_server = False
