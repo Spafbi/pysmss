@@ -770,6 +770,9 @@ class SmssConfig:
 
 
     def spinner(self):
+        """As long as self.spinner_done is False a spinner will appear to help
+           keep the script from looking like it's stalled.
+        """
         for c in itertools.cycle(['|', '/', '-', '\\']):
             if self.spinner_done:
                 break
