@@ -71,7 +71,6 @@ class SmssConfig:
         self.log_Verbosity = int(kwargs.get('log_Verbosity', 0))
         self.log_WriteToFileVerbosity = int(kwargs.get('log_WriteToFileVerbosity', 3))
         self.max_players = int(kwargs.get('max_players', 36))
-        self.max_uptime = float(kwargs.get('max_uptime', 12))
         self.miscreated_map = str(kwargs.get('map', 'islands'))
         self.mod_ids = kwargs.get('mod_ids', list())
         self.pcs_maxCorpseTime = int(kwargs.get('max_corpse_time', 1200))
@@ -90,6 +89,7 @@ class SmssConfig:
         self.sv_motd = str(kwargs.get('sv_motd', ''))
         self.sv_msg_conn = int(bool(kwargs.get('connection_messages', 0)))
         self.sv_msg_death = int(bool(kwargs.get('death_messages', 0)))
+        self.sv_maxuptime = float(kwargs.get('max_uptime', 12))
         self.sv_noBannedAccounts = int(bool(kwargs.get('no_bans', 0)))
         self.sv_servername = str(kwargs.get('server_name', 'Miscreated Self-hosted Server #{}'.format(str(randint(0, 999999)).rjust(6, "0"))))
         self.sv_url = str(kwargs.get('sv_url', ''))
@@ -303,7 +303,7 @@ class SmssConfig:
                 'http_password': '*'*len(self.http_password),
                 'log_Verbosity': self.log_Verbosity,
                 'log_WriteToFileVerbosity': self.log_WriteToFileVerbosity,
-                'max_uptime': self.max_uptime,
+                'sv_maxuptime': self.sv_maxuptime,
                 'sv_msg_conn': self.sv_msg_conn,
                 'sv_msg_death': self.sv_msg_death,
                 'sv_noBannedAccounts': self.sv_noBannedAccounts,
@@ -853,9 +853,9 @@ class SmssConfig:
         self.replace_config_lines(filename, 'ism_percent', self.ism_percent)
         self.replace_config_lines(filename, 'log_Verbosity', self.log_Verbosity)
         self.replace_config_lines(filename, 'log_WriteToFileVerbosity', self.log_WriteToFileVerbosity)
-        self.replace_config_lines(filename, 'max_uptime', self.max_uptime)
         self.replace_config_lines(filename, 'pcs_maxCorpseTime', self.pcs_maxCorpseTime)
         self.replace_config_lines(filename, 'pcs_maxCorpses', self.pcs_maxCorpses)
+        self.replace_config_lines(filename, 'sv_maxuptime', self.sv_maxuptime)
         self.replace_config_lines(filename, 'sv_msg_conn', self.sv_msg_conn)
         self.replace_config_lines(filename, 'sv_msg_death', self.sv_msg_death)
         self.replace_config_lines(filename, 'sv_noBannedAccounts', self.sv_noBannedAccounts)
