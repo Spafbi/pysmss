@@ -10,9 +10,11 @@ debug.txt
 latest_release
 local_release
 python
+scriptvars
 skip
 skip.txt
 smss-configurator*
 stop
 stop.txt
 temp
+test.cmd
