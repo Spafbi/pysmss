@@ -152,6 +152,9 @@ class SmssConfig:
            self.server_id = self.get_server_id_from_db()
            self.add_to_json_config('server_id', self.server_id)
 
+        # Adding this for convenience
+        self.add_to_json_config('enable_basic_pve', self.enable_basic_pve)
+
         # For spinner support
         self.spinner_done = False
 
