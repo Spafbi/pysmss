@@ -1357,8 +1357,8 @@ def main():
 
     # If the server executed prematurely create a stop file
     if time.time() - start_time < 10:
-        print("The server process exited in less than 10 seconds. A 'stop' file has been created. Remove the stop "\
-              "file to allow the server to automatically restart.")
+        print("The server process exited in less than 10 seconds. A 'stop' file has been created to prevent the " \
+              "server from trying to restart. Remove the stop file to allow the server to automatically restart.")
         f = open("stop", "w+")
         f.write("Don't restart the Miscreated server")
         f.close()
