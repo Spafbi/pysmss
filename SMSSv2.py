@@ -3,7 +3,7 @@ from colorama import init
 from datetime import date, datetime
 from glob import glob
 from pathlib import Path
-from pprint import pprint, pformat
+from pprint import pformat
 from random import randint
 from urllib import request
 import asyncio
@@ -267,7 +267,7 @@ class SmssConfig:
 
         for line in cfg_lines:
             # If the line is commented out or doesn't have an = on it skip it.
-            if line.strip().startswith('--') or not line.find('='):
+            if line.strip().startswith('--') or not line.find('=') or not len(line.strip()):
                 continue
             
             # Split our line into key and value
@@ -333,6 +333,12 @@ class SmssConfig:
                     json_value = float(json_value)
                 except:
                     logging.debug('Could not set type to float for key[{}]: {}'.format(key, cfg_value))
+            if isinstance(vars(self)[key], bool):
+                try:
+                    cfg_value = bool(int(cfg_value))
+                    json_value = bool(int(json_value))
+                except:
+                    logging.debug('Could not set type to bool for key[{}]: {}'.format(key, cfg_value))
 
             # Assign our class variables by reference
             vars(self)[key] = cfg_value
@@ -595,7 +601,7 @@ class SmssConfig:
             hosting_cfg_cvars['server']['sv_url'] = self.sv_url
         return pformat(hosting_cfg_cvars, indent=2)
 
-    def get_handled_values():
+    def get_handled_values(self):
         """These are the hosting.cfg configuration values handled by this script - each hosting.cfg setting is paired
            with the corresponding JSON key names
 
@@ -606,7 +612,7 @@ class SmssConfig:
             'as_corpsecountmax': 'ai_corpses_max',
             'as_corpseremovaltime': 'ai_corpses_removal',
             'asm_disable': 'disable_ai',
-            'asm_hordecooldown': 'enable_whitelist',
+            'asm_hordecooldown': 'horde_cooldown',
             'asm_maxmultiplier': 'asm_maxmultiplier',
             'asm_percent': 'asm_percent',
             'g_craftingspeedmultiplier': 'crafting_multiplier',
@@ -658,8 +664,9 @@ class SmssConfig:
             string or bool: map name or False
         """
         server_logs = glob(str(Path('{}/server*.log'.format(self.miscreated_server_path))))
+        if not len(server_logs):
+            return 'islands'
         latest_log = max(server_logs, key=os.path.getctime)
-        print(latest_log)
         search = open(latest_log, "r")
         this_map = False
         for line in search:
