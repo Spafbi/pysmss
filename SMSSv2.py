@@ -212,19 +212,19 @@ class SmssConfig:
             value (any): The value for this key
         """
         logging.debug('method: add_to_json_config')
-        # Read the existing JSON file into a dictionary. Exit method on failure.
+        # Read the existing JSON file into a dictionary.
         try:
-            with open(self.config_file, "r") as f:
+            with open(Path(self.config_file), "r") as f:
                 json_config = json.load(f)
         except Exception as e:
+            json_config = dict()
             logging.debug(e)
-            return
 
         # Add the new key:value pair to the dictionary
         json_config[key] = value
 
         # Write the dictionary out to smss.json
-        with open(self.config_file, 'w') as f:
+        with open(Path(self.config_file), 'w') as f:
             json.dump(json_config, f, indent = 4, sort_keys=True)
 
 
@@ -1249,9 +1249,9 @@ class SmssConfig:
             self.replace_config_lines(filename, 'sv_url', self.sv_url)
 
         if self.enable_basic_pve:
-            self.replace_config_lines(filename, 'g_gameRules_faction0_dmg_f0', 0)
-            self.replace_config_lines(filename, 'g_gameRules_faction0_dmg_f2', 0)
-            self.replace_config_lines(filename, 'g_gameRules_faction1_dmg_f2', 0)
+            self.replace_config_lines(filename, 'g_gamerules_faction0_dmg_f0', 0)
+            self.replace_config_lines(filename, 'g_gamerules_faction0_dmg_f2', 0)
+            self.replace_config_lines(filename, 'g_gamerules_faction1_dmg_f2', 0)
 
 
     def validate_miscreated_server(self):
