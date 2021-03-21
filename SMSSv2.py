@@ -36,7 +36,7 @@ class SmssConfig:
         logging.debug("Initializing MiscreatedRCON object")
 
         # These variables may all be passed to this class. Variables not passed will use default values.
-        self.adopt_server = str(kwargs.get('adopt_server', False))
+        self.adopt_server = kwargs.get('adopt_server', False)
         self.adopt_server_completed = bool(kwargs.get('adopt_server_completed', False))
         self.adopt_smss_completed = bool(kwargs.get('adopt_smss_completed', False))
         self.as_corpsecountmax = int(kwargs.get('ai_corpses_max', 20))
@@ -61,7 +61,7 @@ class SmssConfig:
         self.g_playerfooddecay = float(kwargs.get('hunger_rate', 0.2777))
         self.g_playerfooddecaysprinting = float(kwargs.get('hunger_rate_while_running', 0.34722))
         self.g_playerhealthregen = float(kwargs.get('health_regen_rate', 0.111))
-        self.g_playerinfinitestamina = int(bool(kwargs.get('infinite_stamina', 0)))
+        self.g_playerinfinitestamina = bool(kwargs.get('infinite_stamina', 0))
         self.g_playertemperatureenvrate = float(kwargs.get('tempertature_environment_speed', 0.0005))
         self.g_playertemperaturespeed = float(kwargs.get('temperature_speed', 1.0))
         self.g_playerwaterdecay = float(kwargs.get('thirst_rate', 0.4861))
@@ -93,9 +93,9 @@ class SmssConfig:
         self.smss_first_run = bool(kwargs.get('smss_first_run', True))
         self.sv_maxuptime = float(kwargs.get('max_uptime', 12))
         self.sv_motd = str(kwargs.get('sv_motd', ''))
-        self.sv_msg_conn = int(bool(kwargs.get('connection_messages', 0)))
-        self.sv_msg_death = int(bool(kwargs.get('death_messages', 0)))
-        self.sv_nobannedaccounts = int(bool(kwargs.get('no_bans', 0)))
+        self.sv_msg_conn = bool(kwargs.get('connection_messages', 0))
+        self.sv_msg_death = bool(kwargs.get('death_messages', 0))
+        self.sv_nobannedaccounts = bool(kwargs.get('no_bans', 0))
         self.sv_servername = str(kwargs.get('server_name', 'Miscreated Self-hosted Server #{}'.format(str(randint(0, 999999)).rjust(6, "0"))))
         self.sv_url = str(kwargs.get('sv_url', ''))
         self.theros_admin_ids = kwargs.get('theros_admin_ids', list())
@@ -125,7 +125,11 @@ class SmssConfig:
             self.miscreated_server_path = Path(self.adopt_server)
         else:
             ## Install the server in this path
-            self.miscreated_server_path = Path("{}/MiscreatedServer".format(self.script_path))
+            this_path = "{}/MiscreatedServer".format(self.script_path)
+            self.miscreated_server_path = Path(this_path)
+            self.adopt_server = self.miscreated_server_path
+
+        print(self.script_path, self.miscreated_server_path, self.adopt_server)
 
         self.get_last_map()
 
@@ -213,7 +217,7 @@ class SmssConfig:
             with open(self.config_file, "r") as f:
                 json_config = json.load(f)
         except Exception as e:
-            logging.info(e)
+            logging.debug(e)
             return
 
         # Add the new key:value pair to the dictionary
@@ -355,7 +359,7 @@ class SmssConfig:
         self.add_to_json_config('adopt_server_completed', True)
         
         # We'll write this out just in case the server was an imported legacy SMSS server
-        self.add_to_json_config("adopt_server", self.adopt_server)
+        self.add_to_json_config("adopt_server", str(self.adopt_server))
 
 
     def adopt_existing_smss(self):
@@ -421,7 +425,7 @@ class SmssConfig:
                 this_value = False
             
             if not this_value or not len(this_value):
-                logging.info('{} had no value'.format(var_info.get('smss_name')))
+                logging.debug('{} had no value'.format(var_info.get('smss_name')))
                 continue
             
             this_type = var_info.get('type', 'str')
@@ -1027,8 +1031,8 @@ class SmssConfig:
         # This rewrites the file making subsitutions where needed
         if os.path.exists(filename):
             for line in fileinput.input([filename], inplace=True):
-                if line.strip().startswith('{}='.format(variable)):
-                    line = '{}={}\n'.format(variable, value)
+                if line.strip().lower().startswith('{}='.format(variable.lower())):
+                    line = '{}={}\n'.format(variable.lower(), value)
                     replaced = True
                 sys.stdout.write(line)
 
@@ -1040,7 +1044,7 @@ class SmssConfig:
             file_name = open(filename, 'a+')
             if not line == "\n":
                 file_name.write('\n')
-            file_name.write('{}={}'.format(variable, value))
+            file_name.write('{}={}'.format(variable.lower(), value))
             file_name.close
 
 
@@ -1211,7 +1215,7 @@ class SmssConfig:
         self.replace_config_lines(filename, 'g_playerfooddecay', self.g_playerfooddecay)
         self.replace_config_lines(filename, 'g_playerfooddecaysprinting', self.g_playerfooddecaysprinting)
         self.replace_config_lines(filename, 'g_playerhealthregen', self.g_playerhealthregen)
-        self.replace_config_lines(filename, 'g_playerinfinitestamina', self.g_playerinfinitestamina)
+        self.replace_config_lines(filename, 'g_playerinfinitestamina', int(self.g_playerinfinitestamina))
         self.replace_config_lines(filename, 'g_playertemperatureenvrate', self.g_playertemperatureenvrate)
         self.replace_config_lines(filename, 'g_playertemperaturespeed', self.g_playertemperaturespeed)
         self.replace_config_lines(filename, 'g_playerwaterdecay', self.g_playerwaterdecay)
@@ -1226,9 +1230,9 @@ class SmssConfig:
         self.replace_config_lines(filename, 'pcs_maxcorpsetime', self.pcs_maxcorpsetime)
         self.replace_config_lines(filename, 'pcs_maxcorpses', self.pcs_maxcorpses)
         self.replace_config_lines(filename, 'sv_maxuptime', self.sv_maxuptime)
-        self.replace_config_lines(filename, 'sv_msg_conn', self.sv_msg_conn)
-        self.replace_config_lines(filename, 'sv_msg_death', self.sv_msg_death)
-        self.replace_config_lines(filename, 'sv_nobannedaccounts', self.sv_nobannedaccounts)
+        self.replace_config_lines(filename, 'sv_msg_conn', int(self.sv_msg_conn))
+        self.replace_config_lines(filename, 'sv_msg_death', int(self.sv_msg_death))
+        self.replace_config_lines(filename, 'sv_nobannedaccounts', int(self.sv_nobannedaccounts))
         self.replace_config_lines(filename, 'sv_servername', self.sv_servername)
         self.replace_config_lines(filename, 'wm_effectscaleoffset', self.wm_effectscaleoffset)
         self.replace_config_lines(filename, 'wm_forcetime', self.wm_forcetime)
