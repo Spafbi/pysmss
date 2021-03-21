@@ -3,7 +3,7 @@ from colorama import init
 from datetime import date, datetime
 from glob import glob
 from pathlib import Path
-from pprint import pprint, pformat
+from pprint import pformat
 from random import randint
 from urllib import request
 import asyncio
@@ -36,45 +36,49 @@ class SmssConfig:
         logging.debug("Initializing MiscreatedRCON object")
 
         # These variables may all be passed to this class. Variables not passed will use default values.
-        self.as_corpseCountMax = int(kwargs.get('ai_corpses_max', 20))
-        self.as_corpseRemovalTime = int(kwargs.get('ai_corpses_removal', 300))
+        self.adopt_server = str(kwargs.get('adopt_server', False))
+        self.adopt_server_completed = bool(kwargs.get('adopt_server_completed', False))
+        self.adopt_smss_completed = bool(kwargs.get('adopt_smss_completed', False))
+        self.as_corpsecountmax = int(kwargs.get('ai_corpses_max', 20))
+        self.as_corpseremovaltime = int(kwargs.get('ai_corpses_removal', 300))
         self.asm_disable = int(bool(kwargs.get('disable_ai', 0)))
-        self.asm_hordeCooldown = int(kwargs.get('horde_cooldown', 900))
-        self.asm_maxMultiplier = float(kwargs.get('asm_maxMultiplier', 1))
+        self.asm_hordecooldown = int(kwargs.get('horde_cooldown', 900))
+        self.asm_maxmultiplier = float(kwargs.get('asm_maxmultiplier', 1))
         self.asm_percent = int(kwargs.get('asm_percent', 60))
         self.bind_ip = kwargs.get('bind_ip', '0.0.0.0')
+        self.enable_basic_pve = bool(kwargs.get('enable_basic_pve', False))
         self.enable_rcon = bool(kwargs.get('enable_rcon', True))
         self.enable_upnp = bool(kwargs.get('enable_upnp', False))
         self.enable_whitelist = bool(kwargs.get('enable_whitelist', False))
-        self.g_craftingSpeedMultiplier = float(kwargs.get('crafting_multiplier', 1))
-        self.g_gameRules_Camera = int(kwargs.get('camera', 0))
-        self.g_gameRules_bases = int(kwargs.get('base_rules', 1))
-        self.g_idleKickTime = int(kwargs.get('idle_kick_seconds', 300))
-        self.g_maxHealthMultiplier = float(kwargs.get('player_health_multiplier', 1))
-        self.g_pingLimitGraceTimer = int(kwargs.get('ping_limit_grace_timer', 60))
-        self.g_pingLimitTimer = int(kwargs.get('ping_limit_timer', 60))
+        self.g_craftingspeedmultiplier = float(kwargs.get('crafting_multiplier', 1))
+        self.g_gamerules_bases = int(kwargs.get('base_rules', 1))
+        self.g_gamerules_camera = int(kwargs.get('camera', 0))
+        self.g_idlekicktime = int(kwargs.get('idle_kick_seconds', 300))
+        self.g_maxhealthmultiplier = float(kwargs.get('player_health_multiplier', 1))
         self.g_pinglimit = int(kwargs.get('ping_limit', 0))
-        self.g_playerFoodDecay = float(kwargs.get('hunger_rate', 0.2777))
-        self.g_playerFoodDecaySprinting = float(kwargs.get('hunger_rate_while_running', 0.34722))
-        self.g_playerHealthRegen = float(kwargs.get('health_regen_rate', 0.111))
-        self.g_playerInfiniteStamina = int(bool(kwargs.get('infinite_stamina', 0)))
-        self.g_playerTemperatureEnvRate = float(kwargs.get('tempertature_environment_speed', 0.0005))
-        self.g_playerTemperatureSpeed = float(kwargs.get('temperature_speed', 1.0))
-        self.g_playerWaterDecay = float(kwargs.get('thirst_rate', 0.4861))
-        self.g_playerWaterDecaySprinting = float(kwargs.get('thirst_rate_while_running', 0.607638))
-        self.g_playerWeightLimit = int(kwargs.get('player_weight_limit', 40))
-        self.g_respawnAtBaseTime = int(kwargs.get('respawn_at_base_timeout', 30))
+        self.g_pinglimitgracetimer = int(kwargs.get('ping_limit_grace_timer', 60))
+        self.g_pinglimittimer = int(kwargs.get('ping_limit_timer', 60))
+        self.g_playerfooddecay = float(kwargs.get('hunger_rate', 0.2777))
+        self.g_playerfooddecaysprinting = float(kwargs.get('hunger_rate_while_running', 0.34722))
+        self.g_playerhealthregen = float(kwargs.get('health_regen_rate', 0.111))
+        self.g_playerinfinitestamina = int(bool(kwargs.get('infinite_stamina', 0)))
+        self.g_playertemperatureenvrate = float(kwargs.get('tempertature_environment_speed', 0.0005))
+        self.g_playertemperaturespeed = float(kwargs.get('temperature_speed', 1.0))
+        self.g_playerwaterdecay = float(kwargs.get('thirst_rate', 0.4861))
+        self.g_playerwaterdecaysprinting = float(kwargs.get('thirst_rate_while_running', 0.607638))
+        self.g_playerweightlimit = int(kwargs.get('player_weight_limit', 40))
+        self.g_respawnatbasetime = int(kwargs.get('respawn_at_base_timeout', 30))
         self.grant_guides = bool(kwargs.get('grant_guides', False))
         self.http_password = str(kwargs.get('rcon_password', 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0"))))
-        self.ism_maxCount = int(kwargs.get('loot_concurrent_item_spawned', 750))
+        self.ism_maxcount = int(kwargs.get('loot_concurrent_item_spawned', 750))
         self.ism_percent = float(kwargs.get('loot_spawner_percent', 20))
-        self.log_Verbosity = int(kwargs.get('log_Verbosity', 0))
-        self.log_WriteToFileVerbosity = int(kwargs.get('log_WriteToFileVerbosity', 3))
+        self.log_verbosity = int(kwargs.get('log_verbosity', 0))
+        self.log_writetofileverbosity = int(kwargs.get('log_writetofileverbosity', 3))
         self.max_players = int(kwargs.get('max_players', 36))
         self.miscreated_map = str(kwargs.get('map', 'islands'))
         self.mod_ids = kwargs.get('mod_ids', list())
-        self.pcs_maxCorpseTime = int(kwargs.get('max_corpse_time', 1200))
-        self.pcs_maxCorpses = int(kwargs.get('max_player_corpses', 20))
+        self.pcs_maxcorpses = int(kwargs.get('max_player_corpses', 20))
+        self.pcs_maxcorpsetime = int(kwargs.get('max_corpse_time', 1200))
         self.port = int(kwargs.get('port', 64090))
         self.reset_base_clan_ids = kwargs.get('reset_base_clan_ids', list())
         self.reset_base_owner_ids = kwargs.get('reset_base_owner_ids', list())
@@ -86,30 +90,49 @@ class SmssConfig:
         self.reset_vehicle_owner_ids = kwargs.get('reset_vehicle_owner_ids', list())
         self.reset_vehicles = bool(kwargs.get('reset_vehicles', False))
         self.server_id = int(kwargs.get('server_id', 0))
+        self.smss_first_run = bool(kwargs.get('smss_first_run', True))
+        self.sv_maxuptime = float(kwargs.get('max_uptime', 12))
         self.sv_motd = str(kwargs.get('sv_motd', ''))
         self.sv_msg_conn = int(bool(kwargs.get('connection_messages', 0)))
         self.sv_msg_death = int(bool(kwargs.get('death_messages', 0)))
-        self.sv_maxuptime = float(kwargs.get('max_uptime', 12))
-        self.sv_noBannedAccounts = int(bool(kwargs.get('no_bans', 0)))
+        self.sv_nobannedaccounts = int(bool(kwargs.get('no_bans', 0)))
         self.sv_servername = str(kwargs.get('server_name', 'Miscreated Self-hosted Server #{}'.format(str(randint(0, 999999)).rjust(6, "0"))))
         self.sv_url = str(kwargs.get('sv_url', ''))
         self.theros_admin_ids = kwargs.get('theros_admin_ids', list())
         self.time_day_minutes = float(kwargs.get('time_day_minutes', 390))
         self.time_night_minutes = float(kwargs.get('time_night_minutes', 82.5))
-        self.wm_effectScaleOffset = float(kwargs.get('wm_effectScaleOffset', 0.00))
-        self.wm_forceTime = float(kwargs.get('force_time', -1))
+        self.wm_effectscaleoffset = float(kwargs.get('wm_effectscaleoffset', 0.00))
+        self.wm_forcetime = float(kwargs.get('force_time', -1))
         self.wm_pattern = int(kwargs.get('wm_pattern', -1))
-        self.wm_timeOffset = float(kwargs.get('time_offset', -1))
+        self.wm_timeoffset = float(kwargs.get('time_offset', -1))
 
         # Variables which are derived from passed/default values
-        self.wm_timeScale = float(self.get_timeScale())
-        self.wm_timeScaleNight = float(self.get_timeScaleNight())
+        self.wm_timescale = float(self.get_timeScale(self.time_day_minutes))
+        self.wm_timescalenight = float(self.get_timeScaleNight(self.time_night_minutes))
         self.steam_ugc = self.condense_mods()
 
         # Configure paths variables for required directories
         self.script_path = os.path.dirname(os.path.realpath(__file__))
-        self.miscreated_server_path = Path("{}/MiscreatedServer".format(self.script_path))
+
+        ## Adopt a legacy SMSS server
+        if os.path.exists(Path('{}/scriptvars'.format(self.script_path))) and \
+           os.path.exists(Path('{}/MiscreatedServer'.format(self.script_path))) and \
+           not self.adopt_server:
+            self.adopt_server = Path('{}/MiscreatedServer'.format(self.script_path))
+
+        if self.adopt_server:
+            ## Adopt and existing server
+            self.miscreated_server_path = Path(self.adopt_server)
+        else:
+            ## Install the server in this path
+            self.miscreated_server_path = Path("{}/MiscreatedServer".format(self.script_path))
+
+        self.get_last_map()
+
+        ## SteamCMD installation directory
         self.steamcmd_path = Path("{}/SteamCMD".format(self.script_path))
+
+        ## A place where we'll store temporary files
         self.temp_path = Path("{}/temp".format(self.script_path))
 
         # Create required paths
@@ -118,6 +141,7 @@ class SmssConfig:
         self.temp_path.mkdir(parents=True, exist_ok=True)
 
         # Configure filename variables
+        self.config_file = kwargs.get('config_file', Path('{}/smss.json'.format(self.script_path)))
         self.miscreated_server_cmd = Path("{}/Bin64_dedicated/MiscreatedServer.exe".format(self.miscreated_server_path))
         self.miscreated_server_config = Path("{}/hosting.cfg".format(self.miscreated_server_path))
         self.miscreated_server_db = Path("{}/miscreated.db".format(self.miscreated_server_path))
@@ -126,9 +150,13 @@ class SmssConfig:
         # Set the server id
         if not self.server_id:
            self.server_id = self.get_server_id_from_db()
+           self.add_to_json_config('server_id', self.server_id)
+
+        # Adding this for convenience
+        self.add_to_json_config('enable_basic_pve', self.enable_basic_pve)
 
         # For spinner support
-        self.spinner_done=False
+        self.spinner_done = False
 
         # Dump variables for this object if debugging is turned on
         logging.debug(vars(self))
@@ -172,6 +200,253 @@ class SmssConfig:
                 self.reset_vehicle_owner_ids.append(steam_id)
 
 
+    def add_to_json_config(self, key, value):
+        """This adds a new key:value pair to smss.json
+
+        Args:
+            key (str): The name of the JSON key
+            value (any): The value for this key
+        """
+        logging.debug('method: add_to_json_config')
+        # Read the existing JSON file into a dictionary. Exit method on failure.
+        try:
+            with open(self.config_file, "r") as f:
+                json_config = json.load(f)
+        except Exception as e:
+            logging.info(e)
+            return
+
+        # Add the new key:value pair to the dictionary
+        json_config[key] = value
+
+        # Write the dictionary out to smss.json
+        with open(self.config_file, 'w') as f:
+            json.dump(json_config, f, indent = 4, sort_keys=True)
+
+
+    def adopt_existing_server(self):
+        """If the script is run in a legacy Simplified Miscreated Server Setup location the old "scriptvars" values will
+           be adopted. If a path is specified in the smss.json configuration file for the "adopt_server" key, then
+           settings handled by this script, and defined in hosting.cfg, will be adopted by this script. After an
+           existing server is adopted, further changes for handled values will need to be made in the smss.json file.
+        """
+        logging.debug('method: adopt_existing_server')
+
+        # Only adopt legacy SMSS values if they have not yet been adopted.
+        if not self.adopt_smss_completed:
+            self.adopt_existing_smss()
+
+        # Only adopt an existing Miscreated server's hosting.cfg values if the "adopt_server" path for the existing
+        # server has been defined and the server has not yet been adopted.
+        if self.adopt_server and not self.adopt_server_completed:
+            # Let's see what the last server map loaded was and adopt that.
+            last_map = self.get_last_map()
+            ## If the miscreated_map class var is islands, and last_map has a non-False value, use the detected last map
+            if self.miscreated_map == 'islands' and last_map:
+                self.miscreated_map = last_map
+            self.adopt_existing_hosting_cfg_values()
+
+
+    def adopt_existing_hosting_cfg_values(self):
+        """Adopts an existing Miscreated server installation
+        """
+        logging.debug('method: adopt_existing_hosting_cfg_values')
+
+        # If the specified hosting.cfg file does not exist we exit with critical error.
+        if not os.path.exists(self.miscreated_server_config):
+            logging.critical('The specified hosting.cfg cannot be adopted: {}'.format(self.miscreated_server_config))
+            logging.critical('Make sure the "adopt_server" value specified in config.json is correct')
+            exit(1)
+
+        # 
+        handled_values = self.get_handled_values()
+
+        # Read existing values
+        hosting_cfg = open(self.miscreated_server_config, 'r')
+        cfg_lines = hosting_cfg.readlines()
+
+        for line in cfg_lines:
+            # If the line is commented out or doesn't have an = on it skip it.
+            if line.strip().startswith('--') or not line.find('=') or not len(line.strip()):
+                continue
+            
+            # Split our line into key and value
+            key, value = line.strip().split('=', 1)
+
+            # If either key or value has zero length continue
+            if not len(key) or not len(value):
+                continue
+
+            # make the key lowercase
+            key = key.strip().lower()
+
+            # grab the JSON key name we'll use for this value
+            json_cfg_key = handled_values.get(key, False)
+
+            # Unless changed, this is the value which will be written to hosting.cfg
+            cfg_value = value.strip()
+
+            # if there's no key skip this line.
+            if not key or not json_cfg_key:
+                continue
+
+            # Special Handling
+            if key == "wm_timescale":
+                # Calculate minutes of daylight
+                json_value = self.get_timeScale(float(cfg_value))
+            elif key == "wm_timescalenight":
+                # Calculate minutes of night
+                json_value = self.get_timeScaleNight(float(cfg_value))
+            elif key == "steam_ugc":
+                # Process the mods list
+                json_value = list()
+                for mod_id in cfg_value.split(','):
+                    try:
+                        # Convert the mod ID to an integer
+                        this_value = int(mod_id.strip())
+                    except:
+                        # If we couldn't convert the mod ID to an integer the original hosting.cfg was borked.
+                        logging.debug('Mod id is not an integer: {}'.format(mod_id))
+                        this_value = False
+
+                    # If the mod_id wasn't an integer, or if it's Theros' admin mod, continue on to the next mod
+                    if this_value in (False, 2011185435):
+                        continue
+                    # Add the mod_id to the list of mods.
+                    json_value.append(this_value)
+                
+                # Create a string from the mod list
+                cfg_value = ','.join(str(x) for x in json_value)
+            else:
+                # Since special handling wasn't needed just do a direct value assignment
+                json_value = cfg_value
+
+            if isinstance(vars(self)[key], int):
+                try:
+                    cfg_value = int(cfg_value)
+                    json_value = int(json_value)
+                except:
+                    logging.debug('Could not set type to int for key[{}]: {}'.format(key, cfg_value))
+            if isinstance(vars(self)[key], float):
+                try:
+                    cfg_value = float(cfg_value)
+                    json_value = float(json_value)
+                except:
+                    logging.debug('Could not set type to float for key[{}]: {}'.format(key, cfg_value))
+            if isinstance(vars(self)[key], bool):
+                try:
+                    cfg_value = bool(int(cfg_value))
+                    json_value = bool(int(json_value))
+                except:
+                    logging.debug('Could not set type to bool for key[{}]: {}'.format(key, cfg_value))
+
+            # Assign our class variables by reference
+            vars(self)[key] = cfg_value
+
+            # Reprocess steam_ugc to remove duplicate mods
+            if key == 'steam_ugc':
+                self.steam_ugc = self.condense_mods()
+
+            # If the value we're working with is one of our handled JSON keys, write it.
+            if json_cfg_key:
+                self.add_to_json_config(json_cfg_key, json_value)
+        
+        # Write out the imported values
+        self.add_to_json_config('adopt_server_completed', True)
+        
+        # We'll write this out just in case the server was an imported legacy SMSS server
+        self.add_to_json_config("adopt_server", self.adopt_server)
+
+
+    def adopt_existing_smss(self):
+        """Adopt the settings from a legacy SMSS installation
+        """
+        smss_vars = {
+            'bind': {
+                'json_name': 'bind_ip',
+                'smss_name': 'bind'
+                },
+            'port': {
+                'json_name': 'port',
+                'smss_name': 'baseport',
+                'type': 'int'
+                },
+            'g_gamerules_bases': {
+                'json_name': 'base_rules',
+                'smss_name': 'buildrule',
+                'type': 'int'
+                },
+            'enable_upnp': {
+                'json_name': 'enable_upnp',
+                'smss_name': 'enableupnp',
+                'type': 'bool'
+                },
+            'grant_guides': {
+                'json_name': 'grant_guides',
+                'smss_name': 'grantguides',
+                'type': 'bool'
+                },
+            'miscreated_map': {
+                'json_name': 'map',
+                'smss_name': 'map'
+                },
+            'max_players': {
+                'json_name': 'max_players',
+                'smss_name': 'maxplayers',
+                'type': 'int'
+                },
+            'http_password': {
+                'json_name': 'rcon_password',
+                'smss_name': 'rcon_password'
+                },
+            'sv_servername': {
+                'json_name': 'server_name',
+                'smss_name': 'server_name'
+                },
+            'enable_whitelist': {
+                'json_name': 'enable_whitelist',
+                'smss_name': 'whitelisted',
+                'type': 'bool'
+                }
+        }
+
+        # Loop through the handled settings
+        for key, var_info in smss_vars.items():
+            file_name = Path('{}/scriptvars/{}.txt'.format(self.script_path, var_info.get('smss_name')))
+            try:
+                with open(file_name) as f:
+                    this_value = f.readline().strip()
+            except:
+                logging.debug('File does not exist - skipped: {}'.format(file_name))
+                this_value = False
+            
+            if not this_value or not len(this_value):
+                logging.info('{} had no value'.format(var_info.get('smss_name')))
+                continue
+            
+            this_type = var_info.get('type', 'str')
+            if this_type == 'bool':
+                if this_value.lower() in ('y', '1'):
+                    this_value = True
+                elif this_value.lower() in ('n', '0'):
+                    this_value = False
+                else:
+                    logging.debug('Type mismatch for scriptvar: '+var_info.get(smss_name))
+                    logging.debug('Skipping adoption of this setting')
+                    continue
+            elif this_type == 'int':
+                try:
+                    this_value = int(this_value)
+                except Exception as e:
+                    logging.debug(e)
+                    logging.debug('Type mismatch for scriptvar: '+var_info.get(smss_name))
+
+            vars(self)[key] = this_value
+            self.add_to_json_config(var_info.get('json_name'), this_value)
+
+        self.add_to_json_config('adopt_smss_completed', True)
+
+
     def calc_distance(self, x1, y1, x2, y2):
         """Calculates the distance between two objects on a plane
 
@@ -195,11 +470,11 @@ class SmssConfig:
         Returns:
             string: A comma delimited string for use in hosting.cfg
         """
+        unique_mods = list()
         logging.debug('method: condense_mods')
         if self.theros_admin_ids:
-            self.mod_ids.append(2011185435)
+            unique_mods.append(2011185435)
 
-        unique_mods = list()
         for mod_id in self.mod_ids:
             if mod_id not in unique_mods:
                 unique_mods.append(mod_id)
@@ -266,56 +541,56 @@ class SmssConfig:
         hosting_cfg_cvars = {
             'ai': {
                 'asm_disable': self.asm_disable,
-                'asm_hordeCooldown': self.asm_hordeCooldown,
-                'asm_maxMultiplier': self.asm_maxMultiplier,
+                'asm_hordecooldown': self.asm_hordecooldown,
+                'asm_maxmultiplier': self.asm_maxmultiplier,
                 'asm_percent': self.asm_percent
             },
             'corpses': {
-                'as_corpseCountMax': self.as_corpseCountMax,
-                'as_corpseRemovalTime': self.as_corpseRemovalTime,
-                'pcs_maxCorpseTime': self.pcs_maxCorpseTime,
-                'pcs_maxCorpses': self.pcs_maxCorpses
+                'as_corpsecountmax': self.as_corpsecountmax,
+                'as_corpseremovaltime': self.as_corpseremovaltime,
+                'pcs_maxcorpsetime': self.pcs_maxcorpsetime,
+                'pcs_maxcorpses': self.pcs_maxcorpses
             },
             'loot': {
-                'ism_maxCount': self.ism_maxCount,
+                'ism_maxcount': self.ism_maxcount,
                 'ism_percent': self.ism_percent
             },
             'players': {
-                'g_craftingSpeedMultiplier': self.g_craftingSpeedMultiplier,
-                'g_gameRules_Camera': self.g_gameRules_Camera,
-                'g_gameRules_bases': self.g_gameRules_bases,
-                'g_idleKickTime': self.g_idleKickTime,
-                'g_maxHealthMultiplier': self.g_maxHealthMultiplier,
-                'g_pingLimitGraceTimer': self.g_pingLimitGraceTimer,
-                'g_pingLimitTimer': self.g_pingLimitTimer,
+                'g_craftingspeedmultiplier': self.g_craftingspeedmultiplier,
+                'g_gamerules_camera': self.g_gamerules_camera,
+                'g_gamerules_bases': self.g_gamerules_bases,
+                'g_idlekicktime': self.g_idlekicktime,
+                'g_maxhealthmultiplier': self.g_maxhealthmultiplier,
+                'g_pinglimitgracetimer': self.g_pinglimitgracetimer,
+                'g_pinglimittimer': self.g_pinglimittimer,
                 'g_pinglimit': self.g_pinglimit,
-                'g_playerFoodDecay': self.g_playerFoodDecay,
-                'g_playerFoodDecaySprinting': self.g_playerFoodDecaySprinting,
-                'g_playerHealthRegen': self.g_playerHealthRegen,
-                'g_playerInfiniteStamina': self.g_playerInfiniteStamina,
-                'g_playerTemperatureEnvRate': self.g_playerTemperatureEnvRate,
-                'g_playerTemperatureSpeed': self.g_playerTemperatureSpeed,
-                'g_playerWaterDecay': self.g_playerWaterDecay,
-                'g_playerWaterDecaySprinting': self.g_playerWaterDecaySprinting,
-                'g_respawnAtBaseTime': self.g_respawnAtBaseTime
+                'g_playerfooddecay': self.g_playerfooddecay,
+                'g_playerfooddecaysprinting': self.g_playerfooddecaysprinting,
+                'g_playerhealthregen': self.g_playerhealthregen,
+                'g_playerinfinitestamina': self.g_playerinfinitestamina,
+                'g_playertemperatureenvrate': self.g_playertemperatureenvrate,
+                'g_playertemperaturespeed': self.g_playertemperaturespeed,
+                'g_playerwaterdecay': self.g_playerwaterdecay,
+                'g_playerwaterdecaysprinting': self.g_playerwaterdecaysprinting,
+                'g_respawnatbasetime': self.g_respawnatbasetime
             },
             'server': {
                 'http_password': '*'*len(self.http_password),
-                'log_Verbosity': self.log_Verbosity,
-                'log_WriteToFileVerbosity': self.log_WriteToFileVerbosity,
+                'log_verbosity': self.log_verbosity,
+                'log_writetofileverbosity': self.log_writetofileverbosity,
                 'sv_maxuptime': self.sv_maxuptime,
                 'sv_msg_conn': self.sv_msg_conn,
                 'sv_msg_death': self.sv_msg_death,
-                'sv_noBannedAccounts': self.sv_noBannedAccounts,
+                'sv_nobannedaccounts': self.sv_nobannedaccounts,
                 'sv_servername': self.sv_servername
             },
             'time and weather': {
-                'wm_effectScaleOffset': self.wm_effectScaleOffset,
-                'wm_forceTime': self.wm_forceTime,
+                'wm_effectscaleoffset': self.wm_effectscaleoffset,
+                'wm_forcetime': self.wm_forcetime,
                 'wm_pattern': self.wm_pattern,
-                'wm_timeOffset': self.wm_timeOffset,
-                'wm_timeScale': self.wm_timeScale,
-                'wm_timeScaleNight': self.wm_timeScaleNight
+                'wm_timeoffset': self.wm_timeoffset,
+                'wm_timescale': self.wm_timescale,
+                'wm_timescalenight': self.wm_timescalenight
             }
         }
         if len(self.steam_ugc):
@@ -325,6 +600,84 @@ class SmssConfig:
         if self.sv_url:
             hosting_cfg_cvars['server']['sv_url'] = self.sv_url
         return pformat(hosting_cfg_cvars, indent=2)
+
+    def get_handled_values(self):
+        """These are the hosting.cfg configuration values handled by this script - each hosting.cfg setting is paired
+           with the corresponding JSON key names
+
+        Returns:
+            dictionary: hosting.cfg:smss.json configuration pairs.
+        """
+        return {
+            'as_corpsecountmax': 'ai_corpses_max',
+            'as_corpseremovaltime': 'ai_corpses_removal',
+            'asm_disable': 'disable_ai',
+            'asm_hordecooldown': 'horde_cooldown',
+            'asm_maxmultiplier': 'asm_maxmultiplier',
+            'asm_percent': 'asm_percent',
+            'g_craftingspeedmultiplier': 'crafting_multiplier',
+            'g_gamerules_camera': 'camera',
+            'g_gamerules_bases': 'base_rules',
+            'g_idlekicktime': 'idle_kick_seconds',
+            'g_maxhealthmultiplier': 'player_health_multiplier',
+            'g_pinglimitgracetimer': 'ping_limit_grace_timer',
+            'g_pinglimittimer': 'ping_limit_timer',
+            'g_pinglimit': 'ping_limit',
+            'g_playerfooddecay': 'hunger_rate',
+            'g_playerfooddecaysprinting': 'hunger_rate_while_running',
+            'g_playerhealthregen': 'health_regen_rate',
+            'g_playerinfinitestamina': 'infinite_stamina',
+            'g_playertemperatureenvrate': 'tempertature_environment_speed',
+            'g_playertemperaturespeed': 'temperature_speed',
+            'g_playerwaterdecay': 'thirst_rate',
+            'g_playerwaterdecaysprinting': 'thirst_rate_while_running',
+            'g_playerweightlimit': 'player_weight_limit',
+            'g_respawnatbasetime': 'respawn_at_base_timeout',
+            'http_password': 'rcon_password',
+            'ism_maxcount': 'loot_concurrent_item_spawned',
+            'ism_percent': 'loot_spawner_percent',
+            'log_verbosity': 'log_verbosity',
+            'log_writetofileverbosity': 'log_writetofileverbosity',
+            'pcs_maxcorpsetime': 'max_corpse_time',
+            'pcs_maxcorpses': 'max_player_corpses',
+            'steam_ugc': 'mod_ids',
+            'sv_maxuptime': 'max_uptime',
+            'sv_motd': 'sv_motd',
+            'sv_msg_conn': 'connection_messages',
+            'sv_msg_death': 'death_messages',
+            'sv_nobannedaccounts': 'no_bans',
+            'sv_servername': 'server_name',
+            'sv_url': 'sv_url',
+            'wm_effectscaleoffset': 'wm_effectscaleoffset',
+            'wm_forcetime': 'force_time',
+            'wm_pattern': 'wm_pattern',
+            'wm_timeoffset': 'time_offset',
+            'wm_timescale': 'time_day_minutes',
+            'wm_timescalenight': 'time_night_minutes'
+            }
+
+
+    def get_last_map(self):
+        """Read the server logs and try to derive the most recent map loaded by the server. 
+
+        Returns:
+            string or bool: map name or False
+        """
+        server_logs = glob(str(Path('{}/server*.log'.format(self.miscreated_server_path))))
+        if not len(server_logs):
+            return 'islands'
+        latest_log = max(server_logs, key=os.path.getctime)
+        search = open(latest_log, "r")
+        this_map = False
+        for line in search:
+            if not line.find(" Command line: ") > -1:
+                continue
+            cli_parts = line.split('+')
+            for part in cli_parts:
+                if part[:3] == 'map':
+                    map_directive, value = part.split(' ', 1)
+                    this_map = value.strip().lower()
+        return this_map
 
 
     def get_mod_name(self, mod_id):
@@ -464,26 +817,32 @@ class SmssConfig:
             logging.debug(e)
 
 
-    def get_timeScale(self):
-        """Calculate the correct wm_timeScale value based on the number of
-           minutes set in the configuration.
+    def get_timeScale(self, time_length = 1):
+        """Calculate the correct wm_timescale value based on the passed value. If the passed value is in minutes, the
+           returned value is the multiplier (sv_timeScale). Conversely, if an multiplier use passed, the time in minutes
+           for time_day_minutes is returned.
 
         Returns:
-            float: wm_timeScale multiplier
+            float: wm_timescale multiplier or time_day_minutes value
         """
         logging.debug('method: get_timeScale')
-        return round(780/self.time_day_minutes, 2)
+        if not time_length: # prevent divide by zero attempt
+            return 1
+        return round(780/time_length, 2)
 
 
-    def get_timeScaleNight(self):
-        """Calculate the correct wm_timeScaleNight value based on the number of
-           minutes set in the configuration.
+    def get_timeScaleNight(self, time_length = 1):
+        """Calculate the correct wm_timescalenight value based on the passed value. If the passed value is in minutes,
+            the returned value is the multiplier (sv_timeScaleNight). Conversely, if an multiplier use passed, the time
+            in minutes for time_night_minutes is returned.
 
         Returns:
-            float: wm_timeScaleNight multiplier
+            float: wm_timescalenight multiplier or time_night_minutes value
         """
         logging.debug('method: get_timeScaleNight')
-        return round(660/(self.get_timeScale()*self.time_night_minutes), 2)
+        if not self.wm_timescale or not time_length: # prevent divide by zero attempt
+            return 1
+        return round(660/(self.wm_timescale*time_length), 2)
 
 
     def get_start_server_message(self):
@@ -579,6 +938,12 @@ class SmssConfig:
         f.write("This server is managed by Spafbi's Simplified Miscreated Server Setup script.")
         f.close()
 
+        if self.smss_first_run:
+            self.add_to_json_config('smss_first_run', False)
+            print("The server's configurable settings have been written to smss.json. Edit smss.json with the desired "\
+                  "values and re-run the script to start the server.")
+            return
+
         server_options = list()
 
         if self.bind_ip:
@@ -669,9 +1034,14 @@ class SmssConfig:
 
         # if no lines were replaced open the file and write out the variable/value pair
         if not replaced:
-            file = open(filename, 'a+')
-            file.write('{}={}\n'.format(variable, value))
-            file.close
+            with open(filename, 'r') as f:
+                for line in f:
+                    pass
+            file_name = open(filename, 'a+')
+            if not line == "\n":
+                file_name.write('\n')
+            file_name.write('{}={}'.format(variable, value))
+            file_name.close
 
 
     def reset_base_timers(self):
@@ -824,48 +1194,48 @@ class SmssConfig:
         """
         logging.debug('method: update_hosting_cfg')
         filename = self.miscreated_server_config
-        self.replace_config_lines(filename, 'as_corpseCountMax', self.as_corpseCountMax)
-        self.replace_config_lines(filename, 'as_corpseRemovalTime', self.as_corpseRemovalTime)
+        self.replace_config_lines(filename, 'as_corpsecountmax', self.as_corpsecountmax)
+        self.replace_config_lines(filename, 'as_corpseremovaltime', self.as_corpseremovaltime)
         self.replace_config_lines(filename, 'asm_disable', int(self.asm_disable))
-        self.replace_config_lines(filename, 'asm_hordeCooldown', self.asm_hordeCooldown)
-        self.replace_config_lines(filename, 'asm_maxMultiplier', self.asm_maxMultiplier)
+        self.replace_config_lines(filename, 'asm_hordecooldown', self.asm_hordecooldown)
+        self.replace_config_lines(filename, 'asm_maxmultiplier', self.asm_maxmultiplier)
         self.replace_config_lines(filename, 'asm_percent', self.asm_percent)
-        self.replace_config_lines(filename, 'g_craftingSpeedMultiplier', self.g_craftingSpeedMultiplier)
-        self.replace_config_lines(filename, 'g_gameRules_Camera', self.g_gameRules_Camera)
-        self.replace_config_lines(filename, 'g_gameRules_bases', self.g_gameRules_bases)
-        self.replace_config_lines(filename, 'g_idleKickTime', self.g_idleKickTime)
-        self.replace_config_lines(filename, 'g_maxHealthMultiplier', self.g_maxHealthMultiplier)
-        self.replace_config_lines(filename, 'g_pingLimitGraceTimer', self.g_pingLimitGraceTimer)
-        self.replace_config_lines(filename, 'g_pingLimitTimer', self.g_pingLimitTimer)
+        self.replace_config_lines(filename, 'g_craftingspeedmultiplier', self.g_craftingspeedmultiplier)
+        self.replace_config_lines(filename, 'g_gamerules_camera', self.g_gamerules_camera)
+        self.replace_config_lines(filename, 'g_gamerules_bases', self.g_gamerules_bases)
+        self.replace_config_lines(filename, 'g_idlekicktime', self.g_idlekicktime)
+        self.replace_config_lines(filename, 'g_maxhealthmultiplier', self.g_maxhealthmultiplier)
+        self.replace_config_lines(filename, 'g_pinglimitgracetimer', self.g_pinglimitgracetimer)
+        self.replace_config_lines(filename, 'g_pinglimittimer', self.g_pinglimittimer)
         self.replace_config_lines(filename, 'g_pinglimit', self.g_pinglimit)
-        self.replace_config_lines(filename, 'g_playerFoodDecay', self.g_playerFoodDecay)
-        self.replace_config_lines(filename, 'g_playerFoodDecaySprinting', self.g_playerFoodDecaySprinting)
-        self.replace_config_lines(filename, 'g_playerHealthRegen', self.g_playerHealthRegen)
-        self.replace_config_lines(filename, 'g_playerInfiniteStamina', self.g_playerInfiniteStamina)
-        self.replace_config_lines(filename, 'g_playerTemperatureEnvRate', self.g_playerTemperatureEnvRate)
-        self.replace_config_lines(filename, 'g_playerTemperatureSpeed', self.g_playerTemperatureSpeed)
-        self.replace_config_lines(filename, 'g_playerWaterDecay', self.g_playerWaterDecay)
-        self.replace_config_lines(filename, 'g_playerWaterDecaySprinting', self.g_playerWaterDecaySprinting)
-        self.replace_config_lines(filename, 'g_playerWeightLimit', self.g_playerWeightLimit)
-        self.replace_config_lines(filename, 'g_respawnAtBaseTime', self.g_respawnAtBaseTime)
+        self.replace_config_lines(filename, 'g_playerfooddecay', self.g_playerfooddecay)
+        self.replace_config_lines(filename, 'g_playerfooddecaysprinting', self.g_playerfooddecaysprinting)
+        self.replace_config_lines(filename, 'g_playerhealthregen', self.g_playerhealthregen)
+        self.replace_config_lines(filename, 'g_playerinfinitestamina', self.g_playerinfinitestamina)
+        self.replace_config_lines(filename, 'g_playertemperatureenvrate', self.g_playertemperatureenvrate)
+        self.replace_config_lines(filename, 'g_playertemperaturespeed', self.g_playertemperaturespeed)
+        self.replace_config_lines(filename, 'g_playerwaterdecay', self.g_playerwaterdecay)
+        self.replace_config_lines(filename, 'g_playerwaterdecaysprinting', self.g_playerwaterdecaysprinting)
+        self.replace_config_lines(filename, 'g_playerweightlimit', self.g_playerweightlimit)
+        self.replace_config_lines(filename, 'g_respawnatbasetime', self.g_respawnatbasetime)
         self.replace_config_lines(filename, 'http_password', self.http_password)
-        self.replace_config_lines(filename, 'ism_maxCount', self.ism_maxCount)
+        self.replace_config_lines(filename, 'ism_maxcount', self.ism_maxcount)
         self.replace_config_lines(filename, 'ism_percent', self.ism_percent)
-        self.replace_config_lines(filename, 'log_Verbosity', self.log_Verbosity)
-        self.replace_config_lines(filename, 'log_WriteToFileVerbosity', self.log_WriteToFileVerbosity)
-        self.replace_config_lines(filename, 'pcs_maxCorpseTime', self.pcs_maxCorpseTime)
-        self.replace_config_lines(filename, 'pcs_maxCorpses', self.pcs_maxCorpses)
+        self.replace_config_lines(filename, 'log_verbosity', self.log_verbosity)
+        self.replace_config_lines(filename, 'log_writetofileverbosity', self.log_writetofileverbosity)
+        self.replace_config_lines(filename, 'pcs_maxcorpsetime', self.pcs_maxcorpsetime)
+        self.replace_config_lines(filename, 'pcs_maxcorpses', self.pcs_maxcorpses)
         self.replace_config_lines(filename, 'sv_maxuptime', self.sv_maxuptime)
         self.replace_config_lines(filename, 'sv_msg_conn', self.sv_msg_conn)
         self.replace_config_lines(filename, 'sv_msg_death', self.sv_msg_death)
-        self.replace_config_lines(filename, 'sv_noBannedAccounts', self.sv_noBannedAccounts)
+        self.replace_config_lines(filename, 'sv_nobannedaccounts', self.sv_nobannedaccounts)
         self.replace_config_lines(filename, 'sv_servername', self.sv_servername)
-        self.replace_config_lines(filename, 'wm_effectScaleOffset', self.wm_effectScaleOffset)
-        self.replace_config_lines(filename, 'wm_forceTime', self.wm_forceTime)
+        self.replace_config_lines(filename, 'wm_effectscaleoffset', self.wm_effectscaleoffset)
+        self.replace_config_lines(filename, 'wm_forcetime', self.wm_forcetime)
         self.replace_config_lines(filename, 'wm_pattern', self.wm_pattern)
-        self.replace_config_lines(filename, 'wm_timeOffset', self.wm_timeOffset)
-        self.replace_config_lines(filename, 'wm_timeScale', self.wm_timeScale)
-        self.replace_config_lines(filename, 'wm_timeScaleNight', self.wm_timeScaleNight)
+        self.replace_config_lines(filename, 'wm_timeoffset', self.wm_timeoffset)
+        self.replace_config_lines(filename, 'wm_timescale', self.wm_timescale)
+        self.replace_config_lines(filename, 'wm_timescalenight', self.wm_timescalenight)
 
         if len(self.steam_ugc):
             self.replace_config_lines(filename, 'steam_ugc', self.steam_ugc)
@@ -873,6 +1243,11 @@ class SmssConfig:
             self.replace_config_lines(filename, 'sv_motd', self.sv_motd)
         if len(self.sv_url):
             self.replace_config_lines(filename, 'sv_url', self.sv_url)
+
+        if self.enable_basic_pve:
+            self.replace_config_lines(filename, 'g_gameRules_faction0_dmg_f0', 0)
+            self.replace_config_lines(filename, 'g_gameRules_faction0_dmg_f2', 0)
+            self.replace_config_lines(filename, 'g_gameRules_faction1_dmg_f2', 0)
 
 
     def validate_miscreated_server(self):
@@ -903,6 +1278,7 @@ class SmssConfig:
         asyncio.run(self.run(install_cmd))
         self.spinner_done=True
         logging.info('Miscreated Server installation validated')
+
 
 
 def main():
@@ -962,6 +1338,9 @@ def main():
 
     smss = SmssConfig(**json_config)
 
+    # Adopt an existing server - 
+    smss.adopt_existing_server()
+
     # Update hosting.cfg
     smss.update_hosting_cfg()
 
@@ -985,8 +1364,8 @@ def main():
 
     # If the server executed prematurely create a stop file
     if time.time() - start_time < 10:
-        print("The server process exited in less than 10 seconds. Run with "\
-              "a debug file to create a logfile.")
+        print("The server process exited in less than 10 seconds. A 'stop' file has been created to prevent the " \
+              "server from trying to restart. Remove the stop file to allow the server to automatically restart.")
         f = open("stop", "w+")
         f.write("Don't restart the Miscreated server")
         f.close()

@@ -94,7 +94,7 @@ for %%x in (bs4 colorama requests) do (
 goto :runScript
 
 :runScript
-"%PYTHONBIN%" %TARGETSCRIPT%
+"%PYTHONBIN%" %CORESCRIPT%
 if exist "%BASEPATH%\stop" goto :stopScript
 if exist "%BASEPATH%\stop.txt" goto :stopScript
 goto :update
