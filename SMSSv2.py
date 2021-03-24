@@ -1038,9 +1038,12 @@ class SmssConfig:
 
         # if no lines were replaced open the file and write out the variable/value pair
         if not replaced:
-            with open(filename, 'r') as f:
-                for line in f:
-                    pass
+            try:
+                with open(filename, 'r') as f:
+                    for line in f:
+                        pass
+            except:
+                line = ''
             file_name = open(filename, 'a+')
             if not line == "\n":
                 file_name.write('\n')
