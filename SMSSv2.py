@@ -3,11 +3,12 @@ from colorama import init
 from datetime import date, datetime
 from glob import glob
 from pathlib import Path
-from pprint import pformat
+from pprint import pprint, pformat
 from random import randint
 from urllib import request
 import asyncio
 import fileinput
+import hashlib
 import itertools
 import json
 import logging
@@ -24,7 +25,6 @@ import zipfile
 sys.path.insert(0, '')
 init()
 
-
 class SmssConfig:
     """
     The Simplified Miscreated Server Setup class installs and configures a
@@ -34,77 +34,397 @@ class SmssConfig:
 
     def __init__(self, **kwargs):
         logging.debug("Initializing MiscreatedRCON object")
+        # Load default values
+        self.defaults = self.load_defaults()
+
+        # Server adoption values
+        self.adopt_server = kwargs.get("adopt_server", False)
+        self.adopt_server_completed = bool(kwargs.get("adopt_server_completed", False))
+        self.adopt_smss_completed = bool(kwargs.get("adopt_smss_completed", False))
+
+        # Configure paths variables for required directories
+        self.script_path = os.path.dirname(os.path.realpath(__file__))
+
+        if bool(self.adopt_server):
+            ## Adopt and existing server
+            self.miscreated_server_path = Path(self.adopt_server)
+        else:
+            ## Install the server in this path
+            this_path = "{}/MiscreatedServer".format(self.script_path)
+            self.miscreated_server_path = Path(this_path)
+            self.adopt_server = self.miscreated_server_path
+
+
+        ## SteamCMD installation directory
+        self.steamcmd_path = Path("{}/SteamCMD".format(self.script_path))
+
+        ## A place where we'll store temporary files
+        self.temp_path = Path("{}/temp".format(self.script_path))
+
+        # Create required paths
+        self.miscreated_server_path.mkdir(parents=True, exist_ok=True)
+        self.steamcmd_path.mkdir(parents=True, exist_ok=True)
+        self.temp_path.mkdir(parents=True, exist_ok=True)
+
+        # Configure filename variables
+        self.config_file = kwargs.get('config_file', Path('{}/smss.json'.format(self.script_path)))
+        self.miscreated_server_cmd = Path("{}/Bin64_dedicated/MiscreatedServer.exe".format(self.miscreated_server_path))
+        self.miscreated_server_config = Path("{}/hosting.cfg".format(self.miscreated_server_path))
+        self.miscreated_server_db = Path("{}/miscreated.db".format(self.miscreated_server_path))
+        self.steamcmd = Path("{}/steamcmd.exe".format(self.steamcmd_path))
+
+        # Get the last map used in an existing installation.
+        self.last_map = self.get_last_map()
+
+
+        self.hosting_cfg = self.get_existing_hosting_cfg_values()
+
+        pprint(self.hosting_cfg)
+
+
+
+    def get_existing_hosting_cfg_values(self):
+        """Adopts an existing Miscreated server installation
+        """
+        logging.debug('method: adopt_existing_hosting_cfg_values')
+
+        # If the specified hosting.cfg file does not exist we exit with critical error.
+        if not os.path.exists(self.miscreated_server_config):
+            logging.critical('The specified hosting.cfg cannot be adopted: {}'.format(self.miscreated_server_config))
+            logging.critical('Make sure the "adopt_server" value specified in config.json is correct')
+            exit(1)
+
+        # 
+        # handled_values = self.get_handled_values()
+
+        config = dict()
+
+        # Read existing values
+        hosting_cfg = open(self.miscreated_server_config, 'r')
+        cfg_lines = hosting_cfg.readlines()
+
+        for line in cfg_lines:
+            line = line.strip()
+            # If the line is commented out or doesn't have an = on it skip it.
+            commented = (line.startswith('-'))
+            assignment = line.find('=')
+            if commented or not assignment or not len(line):
+                continue
+
+            # Split our line into key and value
+            key, value = line.strip().split('=', 1)
+            key = key.strip()
+            value = value.strip()
+
+            # If either key or value has zero length continue
+            if not len(key) or not len(value):
+                continue
+
+            # print(key, value)
+
+
+            for default_key, value_info in self.defaults.items():
+                if not default_key.lower() == key.lower():
+                    continue
+
+                value_type = value_info.get('type', 'str')
+
+                if value_type == 'bool':
+                    try:
+                        value = bool(value)
+                    except:
+                        value = value
+                elif value_type == 'int':
+                    try:
+                        value = int(value)
+                    except:
+                        value = value
+                elif value_type == 'float':
+                    try:
+                        value = float(value)
+                    except:
+                        value = value
+            
+                config[default_key] = value
+
+        return config
+
+
+        # pprint(self.defaults)
+        #     hosting_cfg[key] = value
+
+        # return hosting_cfg
+
+            # Look for keys we handle in the *defaults* - we're only going to return
+            # key/values for known keys.
+            # for key, value in self.
+
+
+            # # make the key lowercase
+            # key = key.strip().lower()
+
+        #     # grab the JSON key name we'll use for this value
+        #     json_cfg_key = handled_values.get(key, False)
+
+        #     # Unless changed, this is the value which will be written to hosting.cfg
+        #     cfg_value = value.strip()
+
+        #     # if there's no key skip this line.
+        #     if not key or not json_cfg_key:
+        #         continue
+
+        #     # Special Handling
+        #     if key == "wm_timescale":
+        #         # Calculate minutes of daylight
+        #         json_value = self.get_timeScale(float(cfg_value))
+        #     elif key == "wm_timescalenight":
+        #         # Calculate minutes of night
+        #         json_value = self.get_timeScaleNight(float(cfg_value))
+        #     elif key == "steam_ugc":
+        #         # Process the mods list
+        #         json_value = list()
+        #         for mod_id in cfg_value.split(','):
+        #             try:
+        #                 # Convert the mod ID to an integer
+        #                 this_value = int(mod_id.strip())
+        #             except:
+        #                 # If we couldn't convert the mod ID to an integer the original hosting.cfg was borked.
+        #                 logging.debug('Mod id is not an integer: {}'.format(mod_id))
+        #                 this_value = False
+
+        #             # If the mod_id wasn't an integer, or if it's Theros' admin mod, continue on to the next mod
+        #             if this_value in (False, 2011185435):
+        #                 continue
+        #             # Add the mod_id to the list of mods.
+        #             json_value.append(this_value)
+                
+        #         # Create a string from the mod list
+        #         cfg_value = ','.join(str(x) for x in json_value)
+        #     else:
+        #         # Since special handling wasn't needed just do a direct value assignment
+        #         json_value = cfg_value
+
+        #     if isinstance(vars(self)[key], int):
+        #         try:
+        #             cfg_value = int(cfg_value)
+        #             json_value = int(json_value)
+        #         except:
+        #             logging.debug('Could not set type to int for key[{}]: {}'.format(key, cfg_value))
+        #     if isinstance(vars(self)[key], float):
+        #         try:
+        #             cfg_value = float(cfg_value)
+        #             json_value = float(json_value)
+        #         except:
+        #             logging.debug('Could not set type to float for key[{}]: {}'.format(key, cfg_value))
+        #     if isinstance(vars(self)[key], bool):
+        #         try:
+        #             cfg_value = bool(int(cfg_value))
+        #             json_value = bool(int(json_value))
+        #         except:
+        #             logging.debug('Could not set type to bool for key[{}]: {}'.format(key, cfg_value))
+
+        #     # Assign our class variables by reference
+        #     vars(self)[key] = cfg_value
+
+        #     # Reprocess steam_ugc to remove duplicate mods
+        #     if key == 'steam_ugc':
+        #         self.steam_ugc = self.condense_mods()
+
+        #     # If the value we're working with is one of our handled JSON keys, write it.
+        #     if json_cfg_key:
+        #         self.add_to_json_config(json_cfg_key, json_value)
+        
+        # # Write out the imported values
+        # self.add_to_json_config('adopt_server_completed', True)
+        
+        # # We'll write this out just in case the server was an imported legacy SMSS server
+        # self.add_to_json_config("adopt_server", str(self.adopt_server))
+
+
+
+    def get_last_map(self):
+        """Read the server logs and try to derive the most recent map loaded by the server. 
+
+        Returns:
+            string or bool: map name or False
+        """
+        server_logs = glob(str(Path('{}/server*.log'.format(self.miscreated_server_path))))
+        if not len(server_logs):
+            return 'islands'
+        latest_log = max(server_logs, key=os.path.getctime)
+        search = open(latest_log, "r")
+        this_map = False
+        for line in search:
+            if not line.find(" Command line: ") > -1:
+                continue
+            cli_parts = line.split('+')
+            for part in cli_parts:
+                if part[:3] == 'map':
+                    map_directive, value = part.split(' ', 1)
+                    this_map = value.strip().lower()
+        return this_map
+
+
+    def load_defaults(self):
+        # Read the JSON defaults file
+        try:
+            with open("defaults.json") as f:
+                default_config = json.load(f)
+        except Exception as e:
+            logging.critical(e)
+            logging.critical("Defaults file load error. The defaults.json file must exist and be unaltered.")
+            exit(1)
+
+
+        defaults = dict()
+        for setting, var_info in default_config.items():
+            defaults[setting] = var_info
+        #     setting_type = var_info.get('type', 'str')
+        #     value = var_info.get('value', '')
+        #     if setting_type == 'bool':
+        #         defaults[setting] = bool(value)
+        #     elif setting_type == 'int':
+        #         defaults[setting] = int(value)
+        #     elif setting_type == 'float':
+        #         defaults[setting] = float(value)
+        #     else:
+        #         defaults[setting] = str(value)
+        
+        # # Create a default passw
+        # if not len(defaults.get('http_password')):
+        #     naked_password = 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0"))
+        #     defaults['http_password'] = hashlib.md5(naked_password.encode()).hexdigest()[8:20]
+
+        # if not len(defaults.get('sv_servername')):
+        #     this_servername = 'Miscreated Self-hosted Server #{}'
+        #     defaults['sv_servername'] = this_servername.format(str(randint(0, 999999)).rjust(6, "0"))
+
+        return defaults
+                
+
+
+class SmssConfigOld:
+    """
+    The Simplified Miscreated Server Setup class installs and configures a
+    Miscreated server. Configuration customization may be carried out through
+    the use of a smss.json configuration file.
+    """
+
+    def get_config_bool(self, config, cvar, default):
+        try:
+            vars(self)[cvar] = bool(config.get(cvar, default))
+        except:
+            vars(self)[cvar] = bool(default)
+
+
+    def get_config_int(self, config, cvar, default):
+        try:
+            vars(self)[cvar] = int(config.get(cvar, default))
+        except:
+            vars(self)[cvar] = int(default)
+
+
+    def get_config_float(self, config, cvar, default):
+        try:
+            vars(self)[cvar] = float(config.get(cvar, default))
+        except:
+            vars(self)[cvar] = float(default)
+
+
+    def get_config_str(self, config, cvar, default):
+        try:
+            vars(self)[cvar] = str(config.get(cvar, default))
+        except:
+            vars(self)[cvar] = str(default)
+
+
+    def __init__(self, **kwargs):
+        logging.debug("Initializing MiscreatedRCON object")
 
         # These variables may all be passed to this class. Variables not passed will use default values.
-        self.adopt_server = kwargs.get('adopt_server', False)
-        self.adopt_server_completed = bool(kwargs.get('adopt_server_completed', False))
-        self.adopt_smss_completed = bool(kwargs.get('adopt_smss_completed', False))
-        self.as_corpsecountmax = int(kwargs.get('ai_corpses_max', 20))
-        self.as_corpseremovaltime = int(kwargs.get('ai_corpses_removal', 300))
-        self.asm_disable = int(bool(kwargs.get('disable_ai', 0)))
-        self.asm_hordecooldown = int(kwargs.get('horde_cooldown', 900))
-        self.asm_maxmultiplier = float(kwargs.get('asm_maxmultiplier', 1))
-        self.asm_percent = int(kwargs.get('asm_percent', 60))
-        self.bind_ip = kwargs.get('bind_ip', '0.0.0.0')
-        self.enable_basic_pve = bool(kwargs.get('enable_basic_pve', False))
-        self.enable_rcon = bool(kwargs.get('enable_rcon', True))
-        self.enable_upnp = bool(kwargs.get('enable_upnp', False))
-        self.enable_whitelist = bool(kwargs.get('enable_whitelist', False))
-        self.g_craftingspeedmultiplier = float(kwargs.get('crafting_multiplier', 1))
-        self.g_gamerules_bases = int(kwargs.get('base_rules', 1))
-        self.g_gamerules_camera = int(kwargs.get('camera', 0))
-        self.g_idlekicktime = int(kwargs.get('idle_kick_seconds', 300))
-        self.g_maxhealthmultiplier = float(kwargs.get('player_health_multiplier', 1))
-        self.g_pinglimit = int(kwargs.get('ping_limit', 0))
-        self.g_pinglimitgracetimer = int(kwargs.get('ping_limit_grace_timer', 60))
-        self.g_pinglimittimer = int(kwargs.get('ping_limit_timer', 60))
-        self.g_playerfooddecay = float(kwargs.get('hunger_rate', 0.2777))
-        self.g_playerfooddecaysprinting = float(kwargs.get('hunger_rate_while_running', 0.34722))
-        self.g_playerhealthregen = float(kwargs.get('health_regen_rate', 0.111))
-        self.g_playerinfinitestamina = bool(kwargs.get('infinite_stamina', 0))
-        self.g_playertemperatureenvrate = float(kwargs.get('tempertature_environment_speed', 0.0005))
-        self.g_playertemperaturespeed = float(kwargs.get('temperature_speed', 1.0))
-        self.g_playerwaterdecay = float(kwargs.get('thirst_rate', 0.4861))
-        self.g_playerwaterdecaysprinting = float(kwargs.get('thirst_rate_while_running', 0.607638))
-        self.g_playerweightlimit = int(kwargs.get('player_weight_limit', 40))
-        self.g_respawnatbasetime = int(kwargs.get('respawn_at_base_timeout', 30))
-        self.grant_guides = bool(kwargs.get('grant_guides', False))
-        self.http_password = str(kwargs.get('rcon_password', 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0"))))
-        self.ism_maxcount = int(kwargs.get('loot_concurrent_item_spawned', 750))
-        self.ism_percent = float(kwargs.get('loot_spawner_percent', 20))
-        self.log_verbosity = int(kwargs.get('log_verbosity', 0))
-        self.log_writetofileverbosity = int(kwargs.get('log_writetofileverbosity', 3))
-        self.max_players = int(kwargs.get('max_players', 36))
-        self.miscreated_map = str(kwargs.get('map', 'islands'))
-        self.mod_ids = kwargs.get('mod_ids', list())
-        self.pcs_maxcorpses = int(kwargs.get('max_player_corpses', 20))
-        self.pcs_maxcorpsetime = int(kwargs.get('max_corpse_time', 1200))
-        self.port = int(kwargs.get('port', 64090))
-        self.reset_base_clan_ids = kwargs.get('reset_base_clan_ids', list())
-        self.reset_base_owner_ids = kwargs.get('reset_base_owner_ids', list())
-        self.reset_bases = bool(kwargs.get('reset_bases', False))
-        self.reset_tent_clan_ids = kwargs.get('reset_tent_clan_ids', list())
-        self.reset_tent_owner_ids = kwargs.get('reset_tent_owner_ids', list())
-        self.reset_tents = bool(kwargs.get('reset_tents', False))
-        self.reset_vehicle_clan_ids = kwargs.get('reset_vehicle_clan_ids', list())
-        self.reset_vehicle_owner_ids = kwargs.get('reset_vehicle_owner_ids', list())
-        self.reset_vehicles = bool(kwargs.get('reset_vehicles', False))
-        self.server_id = int(kwargs.get('server_id', 0))
-        self.smss_first_run = bool(kwargs.get('smss_first_run', True))
-        self.sv_maxuptime = float(kwargs.get('max_uptime', 12))
-        self.sv_motd = str(kwargs.get('sv_motd', ''))
-        self.sv_msg_conn = bool(kwargs.get('connection_messages', 0))
-        self.sv_msg_death = bool(kwargs.get('death_messages', 0))
-        self.sv_nobannedaccounts = bool(kwargs.get('no_bans', 0))
-        self.sv_servername = str(kwargs.get('server_name', 'Miscreated Self-hosted Server #{}'.format(str(randint(0, 999999)).rjust(6, "0"))))
-        self.sv_url = str(kwargs.get('sv_url', ''))
-        self.theros_admin_ids = kwargs.get('theros_admin_ids', list())
-        self.time_day_minutes = float(kwargs.get('time_day_minutes', 390))
-        self.time_night_minutes = float(kwargs.get('time_night_minutes', 82.5))
-        self.wm_effectscaleoffset = float(kwargs.get('wm_effectscaleoffset', 0.00))
-        self.wm_forcetime = float(kwargs.get('force_time', -1))
-        self.wm_pattern = int(kwargs.get('wm_pattern', -1))
-        self.wm_timeoffset = float(kwargs.get('time_offset', -1))
+        # defaults = {
+        #     "adopt_server": ['str', '']
+        #     "adopt_server_completed": ['str', '']
+        #     "adopt_smss_completed": ['str', '']
+        #     "as_corpseCountMax": ['str', '']
+        #     "as_corpseRemovalTime": ['str', '']
+        #     "asm_disable": ['str', '']
+        #     "horde_cooldown": ['str', '']
+        #     "asm_maxmultiplier": ['str', '']
+        #     "adopt_server": ['str', '']
+        # }
+
+        # self.get_config_str(kwargs, 'adopt_server', '')
+        # self.get_config_bool(kwargs, 'adopt_server_completed', False)
+        # self.get_config_bool(kwargs, 'adopt_smss_completed', False)
+        # self.get_config_int(kwargs, 'ai_corpses_max', 20)
+        # self.get_config_int(kwargs, 'ai_corpses_removal', 300)
+        # self.get_config_int(kwargs, 'disable_ai', 0)
+        # self.get_config_int(kwargs, 'horde_cooldown', 900)
+        # self.get_config_float(kwargs, 'asm_maxmultiplier', 1)
+        # self.get_config_int(kwargs, 'asm_percent', 60))
+        # self.get_config_str(kwargs, 'bind_ip', '0.0.0.0')
+        # self.get_config_bool(kwargs, 'enable_basic_pve', False))
+        # self.get_config_bool(kwargs, 'enable_rcon', True))
+        # self.get_config_bool(kwargs, 'enable_upnp', False))
+        # self.get_config_bool(kwargs, 'enable_whitelist', False))
+        # self.get_config_float(kwargs, 'crafting_multiplier', 1)
+        # self.get_config_int(kwargs, 'base_rules', 1))
+        # self.get_config_int(kwargs, 'camera', 0))
+        # self.get_config_int(kwargs, 'idle_kick_seconds', 300))
+        # self.get_config_float(kwargs, 'player_health_multiplier', 1)
+        # self.get_config_int(kwargs, 'ping_limit', 0))
+        # self.get_config_int(kwargs, 'ping_limit_grace_timer', 60))
+        # self.get_config_int(kwargs, 'ping_limit_timer', 60))
+        # self.get_config_bool(kwargs, 'hunger_rate', 0.2777))
+        # self.get_config_float(kwargs, 'hunger_rate_while_running', 0.34722))
+        # self.get_config_float(kwargs, 'health_regen_rate', 0.111))
+        # self.get_config_bool(kwargs, 'infinite_stamina', 0))
+        # self.get_config_float(kwargs, 'tempertature_environment_speed', 0.0005))
+        # self.get_config_float(kwargs, 'temperature_speed', 1.0))
+        # self.get_config_float(kwargs, 'thirst_rate', 0.4861))
+        # self.get_config_float(kwargs, 'thirst_rate_while_running', 0.607638))
+        # self.get_config_int(kwargs, 'player_weight_limit', 40))
+        # self.get_config_int(kwargs, 'respawn_at_base_timeout', 30))
+        # self.get_config_int(kwargs, 'g_transactionTime ', 60))
+        # self.get_config_bool(kwargs, 'grant_guides', False))
+        # self.http_password = str(kwargs.get('rcon_password', 'secret{}'.format(str(randint(0, 99999)).rjust(5, "0"))))
+        # self.get_config_int(kwargs, 'loot_concurrent_item_spawned', 750))
+        # self.get_config_float(kwargs, 'loot_spawner_percent', 20))
+        # self.get_config_int(kwargs, 'log_verbosity', 0))
+        # self.get_config_int(kwargs, 'log_writetofileverbosity', 3))
+        # self.get_config_int(kwargs, 'max_players', 36))
+        # self.miscreated_map = str(kwargs.get('map', 'islands'))
+        # self.mod_ids = kwargs.get('mod_ids', list())
+        # self.get_config_int(kwargs, 'max_player_corpses', 20))
+        # self.get_config_int(kwargs, 'max_corpse_time', 1200))
+        # self.get_config_int(kwargs, 'port', 64090))
+        # self.reset_base_clan_ids = kwargs.get('reset_base_clan_ids', list())
+        # self.reset_base_owner_ids = kwargs.get('reset_base_owner_ids', list())
+        # self.reset_bases = self.get_config_bool(kwargs, 'reset_bases', False))
+        # self.reset_tent_clan_ids = kwargs.get('reset_tent_clan_ids', list())
+        # self.reset_tent_owner_ids = kwargs.get('reset_tent_owner_ids', list())
+        # self.reset_tents = self.get_config_bool(kwargs, 'reset_tents', False))
+        # self.reset_vehicle_clan_ids = kwargs.get('reset_vehicle_clan_ids', list())
+        # self.reset_vehicle_owner_ids = kwargs.get('reset_vehicle_owner_ids', list())
+        # self.reset_vehicles = self.get_config_bool(kwargs, 'reset_vehicles', False))
+        # self.server_id = self.get_config_int(kwargs, 'server_id', 0))
+        # self.smss_first_run = self.get_config_bool(kwargs, 'smss_first_run', True))
+        # self.sv_maxuptime = self.get_config_float(kwargs, 'max_uptime', 12))
+        # self.sv_motd = str(kwargs.get('sv_motd', ''))
+        # self.sv_msg_conn = self.get_config_bool(kwargs, 'connection_messages', 0))
+        # self.sv_msg_death = self.get_config_bool(kwargs, 'death_messages', 0))
+        # self.sv_nobannedaccounts = self.get_config_bool(kwargs, 'no_bans', 0))
+        # self.sv_password = str(kwargs.get('server_password', ''))
+        # self.sv_servername = str(kwargs.get('server_name', 'Miscreated Self-hosted Server #{}'.format(str(randint(0, 999999)).rjust(6, "0"))))
+        # self.sv_url = str(kwargs.get('sv_url', ''))
+        # self.theros_admin_ids = kwargs.get('theros_admin_ids', list())
+        # self.time_day_minutes = self.get_config_float(kwargs, 'time_day_minutes', 390))
+        # self.time_night_minutes = self.get_config_float(kwargs, 'time_night_minutes', 82.5))
+        # self.wm_effectscaleoffset = self.get_config_float(kwargs, 'wm_effectscaleoffset', 0.00))
+        # self.wm_forcetime = self.get_config_float(kwargs, 'force_time', -1))
+        # self.wm_pattern = self.get_config_int(kwargs, 'wm_pattern', -1))
+        # self.wm_timeoffset = self.get_config_float(kwargs, 'time_offset', -1))
 
         # Variables which are derived from passed/default values
         self.wm_timescale = float(self.get_timeScale(self.time_day_minutes))
@@ -128,8 +448,6 @@ class SmssConfig:
             this_path = "{}/MiscreatedServer".format(self.script_path)
             self.miscreated_server_path = Path(this_path)
             self.adopt_server = self.miscreated_server_path
-
-        print(self.script_path, self.miscreated_server_path, self.adopt_server)
 
         self.get_last_map()
 
@@ -586,6 +904,7 @@ class SmssConfig:
                 'sv_msg_conn': self.sv_msg_conn,
                 'sv_msg_death': self.sv_msg_death,
                 'sv_nobannedaccounts': self.sv_nobannedaccounts,
+                'sv_password': self.sv_password,
                 'sv_servername': self.sv_servername
             },
             'time and weather': {
@@ -650,6 +969,7 @@ class SmssConfig:
             'sv_msg_conn': 'connection_messages',
             'sv_msg_death': 'death_messages',
             'sv_nobannedaccounts': 'no_bans',
+            'sv_password': 'server_password',
             'sv_servername': 'server_name',
             'sv_url': 'sv_url',
             'wm_effectscaleoffset': 'wm_effectscaleoffset',
@@ -1248,6 +1568,8 @@ class SmssConfig:
             self.replace_config_lines(filename, 'steam_ugc', self.steam_ugc)
         if len(self.sv_motd):
             self.replace_config_lines(filename, 'sv_motd', self.sv_motd)
+        if len(self.sv_password):
+            self.replace_config_lines(filename, 'sv_password', self.sv_password)
         if len(self.sv_url):
             self.replace_config_lines(filename, 'sv_url', self.sv_url)
 
@@ -1343,39 +1665,43 @@ def main():
 
     logging.debug(json_config)
 
+    # Create our configuration object
     smss = SmssConfig(**json_config)
 
-    # Adopt an existing server - 
-    smss.adopt_existing_server()
+    # from pprint import pprint
+    # pprint(vars(smss))
 
-    # Update hosting.cfg
-    smss.update_hosting_cfg()
+    # # Adopt an existing server - 
+    # smss.adopt_existing_server()
 
-    # Update Theros' admin mod config
-    smss.update_admin_cfg()
+    # # Update hosting.cfg
+    # smss.update_hosting_cfg()
 
-    # Prepare the Miscreated server
-    smss.prepare_server()
+    # # Update Theros' admin mod config
+    # smss.update_admin_cfg()
 
-    # Execute database maintenance "tricks"
-    smss.database_tricks()
+    # # Prepare the Miscreated server
+    # smss.prepare_server()
 
-    # Record the time we start the server
-    start_time = time.time()
+    # # Execute database maintenance "tricks"
+    # smss.database_tricks()
 
-    # Launch the Miscreated server
-    smss.launch_server()
+    # # Record the time we start the server
+    # start_time = time.time()
 
-    # Restart the server if a stop file does not exist
-    run_server = not smss.stop_file_exists()
+    # # Launch the Miscreated server
+    # smss.launch_server()
 
-    # If the server executed prematurely create a stop file
-    if time.time() - start_time < 10:
-        print("The server process exited in less than 10 seconds. A 'stop' file has been created to prevent the " \
-              "server from trying to restart. Remove the stop file to allow the server to automatically restart.")
-        f = open("stop", "w+")
-        f.write("Don't restart the Miscreated server")
-        f.close()
+    # # Restart the server if a stop file does not exist
+    # run_server = not smss.stop_file_exists()
+
+    # # If the server executed prematurely create a stop file
+    # if time.time() - start_time < 10:
+    #     print("The server process exited in less than 10 seconds. A 'stop' file has been created to prevent the " \
+    #           "server from trying to restart. Remove the stop file to allow the server to automatically restart.")
+    #     f = open("stop", "w+")
+    #     f.write("Don't restart the Miscreated server")
+    #     f.close()
 
 if __name__ == '__main__':
     main()
